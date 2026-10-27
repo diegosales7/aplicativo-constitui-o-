@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador – Constituição Andrômeda</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f7fb;--card:#fff;--tx:#14182b;--mu:#5d6482;--bd:#d9ddec;--ac:#4f46e5;--ok:#0f9d58;--wa:#d98a00;--er:#d93025;--ink:#ecebff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1020;--card:#171b33;--tx:#e8eaff;--mu:#9aa2c8;--bd:#2a3058;--ac:#8b85ff;--ok:#3ddc97;--wa:#ffc247;--er:#ff6b6b;--ink:#10132a}}
+:root[data-theme="dark"]{--bg:#0d1020;--card:#171b33;--tx:#e8eaff;--mu:#9aa2c8;--bd:#2a3058;--ac:#8b85ff;--ok:#3ddc97;--wa:#ffc247;--er:#ff6b6b;--ink:#10132a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 -apple-system,system-ui,"Segoe UI",Roboto,sans-serif;padding:14px;max-width:720px;margin-inline:auto}
+h1{font-size:19px;margin:4px 0}h2{font-size:15px;margin:0 0 8px}
+.sub{color:var(--mu);font-size:13px;margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(20,24,43,.07)}
+.card>h2{font-size:17px;font-weight:700;margin:0 0 4px}
+.card>h2+.note{font-size:13px;margin:0 0 12px}
+.bt.pr{background:var(--ac);border-color:var(--ac);color:var(--ink);font-weight:600}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac);margin-top:6px}
+.row b.ok,.row b.wa,.row b.er{padding:2px 9px;border-radius:8px}
+.row b.ok{background:color-mix(in srgb,var(--ok) 15%,transparent)}.row b.wa{background:color-mix(in srgb,var(--wa) 18%,transparent)}.row b.er{background:color-mix(in srgb,var(--er) 15%,transparent)}
+.stc{padding:5px 10px;border-radius:99px;font-size:12.5px;font-weight:600;border:1px solid var(--bd);background:var(--bg);color:var(--mu)}
+.stc.ok{color:var(--ok);border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}.stc.wa{color:var(--wa);border-color:var(--wa);background:color-mix(in srgb,var(--wa) 14%,transparent)}.stc.er{color:var(--er);border-color:var(--er);background:color-mix(in srgb,var(--er) 12%,transparent)}
+.card[data-st=ok]{border-left:5px solid var(--ok)}.card[data-st=wa]{border-left:5px solid var(--wa)}.card[data-st=er]{border-left:5px solid var(--er);background:color-mix(in srgb,var(--er) 4%,var(--card))}
+.row{padding-top:8px;padding-bottom:8px}
+.sec>summary{background:linear-gradient(90deg,color-mix(in srgb,var(--ac) 12%,var(--card)),var(--card))}
+.bt:active,.ib:active,.sg:active,.ch:active{transform:scale(.97)}.bt.pr{box-shadow:0 2px 6px color-mix(in srgb,var(--ac) 35%,transparent)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);outline-offset:1px}
+.ib{padding:6px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px}
+.sg{flex:1;padding:8px 4px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px;line-height:1.3}
+.sg.on{border:2px solid var(--ac);font-weight:700}
+.sg small{display:block;font-size:11px;font-weight:400;color:var(--mu)}
+label{display:block;font-size:12px;color:var(--mu);margin-bottom:3px}
+input,select{width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:15px}
+.g{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid currentColor}
+.ok{color:var(--ok)}.wa{color:var(--wa)}.er{color:var(--er)}
+.row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed var(--bd);font-size:14px}
+.row:last-child{border:0}
+.note{font-size:12.5px;color:var(--mu);margin-top:6px}
+.bar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:6px 0}
+.ch{display:inline-flex;gap:5px;align-items:center;padding:5px 9px;border:1px solid var(--bd);border-radius:99px;margin:3px 3px 0 0;font-size:13px;color:var(--tx)}
+.ch input{width:auto;margin:0;padding:0}
+.ch:has(input:checked){border-color:var(--ac);font-weight:600}
+.bt{margin-top:8px;padding:9px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px}
+.sec{margin-bottom:12px}.sec>summary{font-size:16px;font-weight:700;padding:11px 14px;border:1px solid var(--bd);border-radius:12px;background:var(--card);cursor:pointer;list-style:none;margin-bottom:10px;display:flex;justify-content:space-between}.sec>summary::-webkit-details-marker{display:none}.sec>summary::after{content:"▾";color:var(--mu)}.sec:not([open])>summary::after{content:"▸"}
+/* letra um pouco maior */
+body{font-size:17px}
+.note,.sub{font-size:14px}.card>h2{font-size:19px}.card>h2+.note{font-size:14px}label{font-size:13px}.row{font-size:16px}.lg{font-size:13px}
+.sec>summary{font-size:17px}.tag{font-size:13px}.sg{font-size:14px}.sg small{font-size:12px}.stc{font-size:13.5px}.ch{font-size:14px}.ib{font-size:15px}.bt{font-size:16px}
+[style*="font-size:11px"]{font-size:12px!important}[style*="font-size:12px"]{font-size:13px!important}[style*="font-size:13px"]{font-size:14px!important}[style*="font-size:14px"]{font-size:15px!important}[style*="font-size:15px"]{font-size:16px!important}
+</style></head><body>
+<h1>🌌 Simulador da Constituição Andrômeda</h1>
+<div id="svb" style="position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding:6px 0;display:flex;gap:10px;align-items:center"><button id="svbtn" class="bt" style="margin:0;white-space:nowrap">💾 Salvar</button><span id="svm" class="note" style="margin:0"></span></div>
+<nav id="nvb" style="display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px"></nav>
+<div id="ld" class="note">⏳ Carregando seus dados…</div>
+<div class="sub">Digite receita, despesa e fatura de 3 meses e veja regime, divisão, TFP e Imposto Disciplinar.</div>
+
+<div class="card" id="ins"></div>
+<details class="sec" open><summary>📊 Simulação do trimestre</summary>
+<div class="card"><h2>⚙️ Parâmetros</h2>
+<div class="note">Seus números-base: tudo abaixo é calculado a partir daqui.</div>
+<div class="g">
+<div><label>Renda CLT (base do teto)</label><input id="clt" type="number" value="2650"></div>
+<div><label>Gatilho 1: gastos a partir de</label><input id="g1" type="number" value="2300"></div>
+<div><label>Teto do cartão (Art. 7º)</label><select id="teto"><option>25</option><option>20</option><option>15</option><option>10</option></select></div>
+</div>
+<div style="margin-top:8px"><label>Regime vigente no 1º mês</label>
+<select id="r0"><option value="ORD">Ordinário</option><option value="PROT">Proteção</option><option value="EMER">Emergência</option></select></div>
+<div id="prh" style="margin-top:10px"></div>
+</div>
+<div id="meses"></div>
+<div class="card" id="tri"></div>
+<div class="card"><h2>➕ Receitas avulsas do mês</h2>
+<div class="note">Entrou um dinheiro extra? Veja na hora quanto vai para investimentos, Reserva Flex e o que fica livre.</div>
+<label>📅 Em qual mês entrou?</label>
+<div id="avch" style="display:flex;gap:6px;margin-bottom:10px"></div>
+<select id="avm" style="display:none"><option value="0">Regime do Mês 1</option><option value="1">Regime do Mês 2</option><option value="2">Regime do Mês 3</option></select>
+<label>⚡ Atalhos</label>
+<div id="avq"></div>
+<div id="avl" style="margin-top:6px"></div>
+<button id="avb" class="bt pr">+ Adicionar receita</button>
+<div id="avo" style="margin-top:12px"></div>
+<div style="margin-top:12px;border:1px solid var(--bd);border-radius:12px;padding:10px 12px"><div style="font-weight:700">🧾 Recolhimento desta receita</div><div class="note" style="margin:2px 0 8px">Informe quanto conseguiu recolher. Se faltar, o app gera a ocorrência no Livro e você paga o saldo aos poucos.</div><label>💰 Quanto consegui recolher (R$)</label><input id="avrg" type="number" inputmode="decimal" placeholder="R$ · vazio = ainda não informei"><div id="avrq" style="margin-top:6px"></div><div id="avrr" style="margin-top:8px"></div></div>
+<div style="margin-top:12px;border-top:1px dashed var(--bd);padding-top:10px"><label>🎚️💧 E se eu guardar mais da parte livre no colchão? <b id="avsv">0%</b></label><input type="range" id="avsl" min="0" max="100" step="5" value="0"><div id="avsr" class="note" style="margin-top:4px"></div></div></div>
+<div class="card"><h2>🎯 Meta do trimestre (Art. 13º)</h2>
+<div class="note" style="margin:0 0 8px">Mostra a faixa em que o trimestre fecha, o que cada faixa cobra de imposto e quanto falta cortar no último mês para subir.</div><div id="mto"></div><div style="margin-top:12px;border-top:1px dashed var(--bd);padding-top:10px"><label>🎚️ E se <span id="ml3">o último mês</span> tiver despesa de <b id="mwv"></b>? <button id="mwz" class="ib" style="margin-left:6px">↺ voltar</button></label><input type="range" id="mwr" min="0" max="5000" step="10"><div id="mwo" class="note" style="margin-top:4px"></div></div></div>
+<div class="card"><h2>🔭 Projeção financeira trimestral (Art. 18º-B)</h2>
+<div class="note" style="margin:0 0 8px">Olha os próximos 3 meses pela renda do CLT. Campos em branco usam a renda e a fatura que você informou acima. Apenas informativo: não define regime.</div><div class="note" style="margin:12px 0 4px"><b id="pjl0">Mês 1</b></div><div class="g2"><div><label>Renda CLT</label><input id="pj0rn" type="number" placeholder="R$"></div><div><label>Despesas fixas</label><input id="pj0fx" type="number" placeholder="R$"></div><div><label>Parcelas</label><input id="pj0pc" type="number" placeholder="R$"></div><div><label>Fatura do cartão</label><input id="pj0fa" type="number" placeholder="R$"></div><div><label>Outras obrigações</label><input id="pj0ou" type="number" placeholder="R$"></div><div><label>Receita extra (opcional)</label><input id="pj0ex" type="number" placeholder="R$"></div><div><label>Gastos variáveis (opcional)</label><input id="pj0vr" type="number" placeholder="R$"></div></div><div class="note" style="margin:12px 0 4px"><b id="pjl1">Mês 2</b> <button class="ib" data-cp="1" style="margin-left:6px;font-size:12px">📋 copiar do mês anterior</button></div><div class="g2"><div><label>Renda CLT</label><input id="pj1rn" type="number" placeholder="R$"></div><div><label>Despesas fixas</label><input id="pj1fx" type="number" placeholder="R$"></div><div><label>Parcelas</label><input id="pj1pc" type="number" placeholder="R$"></div><div><label>Fatura do cartão</label><input id="pj1fa" type="number" placeholder="R$"></div><div><label>Outras obrigações</label><input id="pj1ou" type="number" placeholder="R$"></div><div><label>Receita extra (opcional)</label><input id="pj1ex" type="number" placeholder="R$"></div><div><label>Gastos variáveis (opcional)</label><input id="pj1vr" type="number" placeholder="R$"></div></div><div class="note" style="margin:12px 0 4px"><b id="pjl2">Mês 3</b> <button class="ib" data-cp="2" style="margin-left:6px;font-size:12px">📋 copiar do mês anterior</button></div><div class="g2"><div><label>Renda CLT</label><input id="pj2rn" type="number" placeholder="R$"></div><div><label>Despesas fixas</label><input id="pj2fx" type="number" placeholder="R$"></div><div><label>Parcelas</label><input id="pj2pc" type="number" placeholder="R$"></div><div><label>Fatura do cartão</label><input id="pj2fa" type="number" placeholder="R$"></div><div><label>Outras obrigações</label><input id="pj2ou" type="number" placeholder="R$"></div><div><label>Receita extra (opcional)</label><input id="pj2ex" type="number" placeholder="R$"></div><div><label>Gastos variáveis (opcional)</label><input id="pj2vr" type="number" placeholder="R$"></div></div>
+<div style="margin-top:14px;border:1px dashed var(--ac);border-radius:12px;padding:10px 12px"><label>🛒 Posso assumir uma nova parcela?</label><div class="g2"><div><label>Valor por mês (R$)</label><input id="pjnv" type="number" placeholder="R$"></div><div><label>📅 Em quais meses</label><div style="display:flex;gap:6px;flex-wrap:wrap"><label class="ch" style="margin:0"><input type="checkbox" id="pjm0" checked> Mês 1</label><label class="ch" style="margin:0"><input type="checkbox" id="pjm1" checked> Mês 2</label><label class="ch" style="margin:0"><input type="checkbox" id="pjm2" checked> Mês 3</label></div></div></div><div id="pjnr" style="margin-top:8px"></div></div>
+<div id="pjo" style="margin-top:12px"></div>
+<div style="margin-top:10px;border-top:1px dashed var(--bd);padding-top:10px"><label>Bloco de notas · resultado da projeção</label><textarea id="pjt" readonly rows="14" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px"></textarea><button id="pjc" class="bt">📋 Copiar resultado</button> <span id="pjm" class="note"></span></div></div>
+</details>
+<details class="sec"><summary>💧 Colchão e reservas</summary>
+<div class="card"><h2>💧 Colchão de curto prazo (Art. 10º-A, §1º)</h2>
+<div class="note" style="margin:0 0 8px">Preencha só o que você tem hoje. Serve como medição do colchão.</div>
+<div class="g"><div><label>Tesouro Selic</label><input id="chs" type="number" placeholder="R$"></div><div><label>CDB liq. diária</label><input id="chc" type="number" placeholder="R$"></div><div><label>Reserva Flex (mesmo saldo)</label><input id="chf" type="number" placeholder="R$"></div></div>
+<div style="margin-top:8px"><label>🌱 Tesouro IPCA+ (longo prazo, fora do colchão)</label><input id="chi" type="number" placeholder="R$"></div>
+<div class="g2" style="margin-top:8px"><div><label>Meta do colchão</label><select id="chm"><option>2100</option><option>2500</option></select></div><div><label>Aporte mensal no colchão</label><input id="cha" type="number" placeholder="opcional"></div></div>
+<label class="ch" style="margin-top:8px"><input type="checkbox" id="chk"> Contar a Reserva Flex no colchão</label>
+<div id="cho" style="margin-top:8px"></div></div>
+<div class="card"><h2>💳 Retirada da Reserva Flex (Art. 8º)</h2>
+<div class="note" style="margin:0 0 8px">O saldo informado aqui é o mesmo da Reserva Flex do colchão e alimenta o patrimônio e a visão geral.</div>
+<div class="g2"><div><label>Saldo atual da Reserva Flex</label><input id="fxs" type="number" placeholder="R$"></div>
+<div><label>Quanto quer retirar (opcional)</label><input id="fxr" type="number" placeholder="R$"></div></div>
+<div id="fxo" style="margin-top:10px"></div>
+<div id="fxf" style="display:none;margin-top:12px;border-top:1px dashed var(--bd);padding-top:10px"><h2>📝 Registro no Livro de Pendências</h2>
+<div class="g2"><div><label>Motivo da retirada</label><input id="fxm" placeholder="Ex.: dívida essencial"></div><div><label>Destino do valor</label><input id="fxd" placeholder="Ex.: fatura do cartão"></div></div>
+<textarea id="fxt" readonly rows="9" style="width:100%;margin-top:8px;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:13px/1.4 inherit"></textarea>
+<button id="fxc" style="margin-top:8px;padding:9px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px">📋 Copiar registro</button> <span id="fxcm" class="note"></span></div></div>
+<div class="card"><h2>🔒 Reserva Obrigatória</h2><div class="note" style="margin:0 0 8px">Cada aporte fica travado por 1 mês a partir da data. Ao registrar, o app gera o texto do registro para você colar no seu Livro de Pendências (ele não vai para o livro do app).</div>
+<div class="g2"><div><label>Data</label><input id="rod" type="date"></div><div><label>Valor do aporte</label><input id="rov" type="number" placeholder="R$"></div></div>
+<button id="roa" class="bt pr">➕ Registrar aporte</button>
+<div id="rof" style="display:none;margin-top:10px;border-top:1px dashed var(--bd);padding-top:10px"><label>Registro para o seu Livro de Pendências</label><textarea id="rot" readonly rows="9" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px"></textarea><button id="roc" class="bt">📋 Copiar registro</button> <span id="rocm" class="note"></span></div>
+<div id="rol" style="margin-top:10px"></div></div>
+</details>
+<details class="sec"><summary>📈 Imposto Disciplinar e ETFs</summary>
+<div class="card"><h2>⚖️ Imposto Disciplinar (Art. 11º): pagamento e compras de ETF</h2>
+<div class="note" style="margin:0 0 8px">Cotas de ACWI11, DIVO11 ou NASD11 compradas com o imposto. Se o valor não der uma cota, acumula para o trimestre seguinte e pode ser complementado com recursos próprios.</div>
+<div style="border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-bottom:12px"><div style="font-weight:700">💰 Pagamento do Imposto Disciplinar</div><div class="note" style="margin:2px 0 8px">Pague aos poucos com a parcela Vida e veja quanto falta. O que faltar vira pendência no Livro e se atualiza sozinho.</div><div id="impo"></div>
+<div class="g2" style="margin-top:8px"><div><label>💵 Quanto paguei agora (R$)</label><input id="impv" type="number" inputmode="decimal" placeholder="R$"></div><div><label>📅 Data</label><input id="impd" type="date"></div></div>
+<div id="impq" style="margin-top:6px"></div><button id="impa" class="bt pr">➕ Registrar pagamento</button> <button id="impg" class="bt" style="display:none">📑 Registrar pendência no Livro</button> <span id="impm" class="note"></span><div id="impl" style="margin-top:8px"></div></div>
+<div class="g2"><div><label>ETF</label><select id="cat"><option>ACWI11</option><option>DIVO11</option><option>NASD11</option></select></div><div><label>Preço da cota hoje (opcional)</label><input id="cot" type="number" step="0.01" placeholder="R$"></div></div>
+<div class="g" style="margin-top:8px"><div><label>Data</label><input id="cad" type="date"></div><div><label>Cotas</label><input id="caq" type="number" placeholder="un."></div><div><label>Preço pago (R$)</label><input id="cap" type="number" step="0.01" placeholder="R$"></div></div>
+<button id="cbc" class="bt pr">🛒 Registrar compra</button>
+<div id="cai" style="margin-top:10px"></div>
+<div id="carw" style="display:none;margin-top:10px;border-top:1px dashed var(--bd);padding-top:10px"><label>Registro para o Livro de Pendências</label><textarea id="car" readonly rows="8" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px"></textarea><button id="carc" class="bt">📋 Copiar registro</button> <span id="carm" class="note"></span></div></div>
+</details>
+<details class="sec"><summary>🗓️ Revisão trimestral</summary>
+<div class="card"><h2>📚 Livro Trimestral (Art. 18º)</h2>
+<div class="note" style="margin:0 0 8px">Fecha o trimestre com a receita e a despesa dos 3 meses digitados acima.</div>
+<div class="g2"><div><label>Início</label><input id="ltp1" type="date" value="2026-11-01"></div><div><label>Fim</label><input id="ltp2" type="date" value="2027-01-31"></div></div>
+<label style="margin-top:8px">Constituição vigente</label><input id="ltc" value="Andrômeda">
+<div class="g2" style="margin-top:8px"><div><label>Receita (opcional)</label><input id="ltr" type="number" placeholder="R$"></div><div><label>Despesa (opcional)</label><input id="ltd" type="number" placeholder="R$"></div></div><div class="note">Se deixar vazio, usa os 3 meses digitados acima. Preencha para registrar trimestres antigos.</div>
+<button id="lta" class="bt pr">📚 Fechar trimestre</button> <span id="ltm" class="note"></span>
+<div id="ltl" style="margin-top:10px"></div>
+<textarea id="ltt" readonly rows="8" style="width:100%;margin-top:8px;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px"></textarea>
+<button id="ltp" style="margin-top:8px;padding:9px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px">📋 Copiar livro trimestral</button> <span id="ltk" class="note"></span></div>
+<div class="card"><h2>📈 Evolução patrimonial e trimestral</h2><div class="note">Como seus trimestres e o patrimônio acompanhado estão evoluindo.</div><div id="chl"></div><div id="chn" class="note"></div><div id="evx"></div></div>
+<div class="card"><h2>📆 Calendário</h2><div class="note">Reunião mensal todo dia 13, fechamentos e revisões do trimestre e o aniversário da Constituição.</div><div id="cal"></div><div class="note">Calculado a partir do período do Livro Trimestral. Imposto Disciplinar no fechamento; Revisão no dia seguinte.</div></div>
+<div class="card"><h2>✅ Checklist da Revisão Trimestral (Art. 15º-A)</h2><div class="note">O app confere sozinho o que dá; você marca o resto.</div><div id="ckl"></div><button id="ckz" class="bt">🔄 Novo trimestre: limpar checklist</button></div>
+<div class="card"><h2>🧾 Ata da Revisão (Arts. 14º e 15º)</h2><div class="note">O app responde sozinho às perguntas da revisão com o que você preencheu. Escreva só a lição principal. Esta ata também vale para as reuniões mensais: registre pelo calendário.</div><label>Principal lição do trimestre</label><textarea id="ckli" rows="2" placeholder="Ex.: fatura estourou no mês 2 porque parcelei sem planejar" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:15px"></textarea><textarea id="ata" readonly rows="16" style="width:100%;margin-top:10px;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px"></textarea><button id="atc" class="bt pr">📋 Copiar ata</button> <button id="atg" class="bt">📑 Registrar a ata no Livro</button> <span id="atm" class="note"></span></div>
+<div class="card"><h2>💳 Redução do teto do cartão (Art. 7º)</h2>
+<div class="note" style="margin:0 0 8px">Usa as faturas dos 3 meses que você digitou e o teto escolhido nos parâmetros.</div>
+<div id="cpr" style="margin-top:10px"></div></div>
+</details>
+<details class="sec"><summary>📑 Livro de pendências e dados</summary>
+<div class="card"><h2>📑 Livro de Pendências Constitucionais</h2>
+<div class="note">O app detecta o que precisa de registro: confirme com um toque ou registre manualmente.</div>
+<div id="lvsm"></div>
+<div id="lvq" style="margin-top:8px"></div>
+<div id="lvsg"></div>
+<div style="font-weight:700;margin-top:16px">📚 Registros</div>
+<div id="lvfl" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0"></div>
+<div id="lvl"></div>
+<details class="sec" id="lvnw" style="margin-top:14px"><summary>✍️ Registro manual</summary>
+<label>1. Escolha o tipo (o artigo já vem sugerido)</label>
+<div id="lvtl" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
+<select id="lvc" style="display:none"></select>
+<div class="g2" style="margin-top:10px"><div><label>2. Data</label><input id="lvd" type="date"></div><div><label>Situação</label><select id="lvs"></select></div></div>
+<label style="margin-top:10px">3. O que aconteceu?</label><textarea id="lvx" rows="2" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:15px"></textarea>
+<div id="lvv" style="display:none;margin-top:8px"><label>Valor do aporte na Reserva Obrigatória (R$)</label><input id="lvvl" type="number" placeholder="R$"></div>
+<label style="margin-top:10px">4. Por quê?</label><textarea id="lvj" rows="2" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:15px"></textarea><div id="lvjq" style="margin-top:6px"></div>
+<label style="margin-top:10px">5. Artigos citados</label><div id="lvab"></div>
+<details class="sec" style="margin-top:6px"><summary>Alterar artigos</summary><div id="lvart"></div><input id="lvf" placeholder="Complemento (§, inciso) — opcional" style="margin-top:6px"></details>
+<button id="lva" class="bt pr">➕ Adicionar ao livro</button> <span id="lvm" class="note"></span></details>
+<details class="sec" style="margin-top:4px"><summary>📋 Texto completo para copiar</summary>
+<textarea id="lvt" readonly rows="10" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13px"></textarea>
+<button id="lvp" class="bt pr">📋 Copiar livro</button> <button id="lvz" class="bt" style="background:var(--card);color:var(--tx);border:1px solid var(--bd)">🗑️ Zerar livro</button> <span id="lvk" class="note"></span></details></div>
+<div class="note">Simulação baseada no texto da Andrômeda. Não é recomendação financeira; a decisão final é do Legislativo.</div>
+<div class="card"><h2>💾 Dados deste aparelho</h2>
+<div class="note" style="margin:0 0 8px">O que você digita fica salvo e volta quando abrir de novo.</div><div id="svs" class="note" style="margin:0 0 8px"></div>
+<button id="lmp" style="padding:9px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px">🗑️ Voltar aos valores de exemplo</button></div>
+</details>
+<details class="sec" open><summary>🧭 Resumo geral</summary><div class="card" id="pan"></div>
+<div class="card"><h2>📤 Resumo para compartilhar</h2>
+<div class="note" style="margin:0 0 8px">Em vez de print, copie o texto e cole no WhatsApp. Ele se atualiza sozinho e leva os 3 meses, a leitura trimestral, reservas, ETFs, projeção e patrimônio.</div>
+<textarea id="res" readonly rows="16" style="width:100%;padding:9px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:13px/1.4 inherit"></textarea>
+<button id="cp" style="margin-top:8px;padding:9px 12px;border-radius:9px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px">📋 Copiar resumo</button> <span id="cpm" class="note"></span></div>
+</details>
+
+<script>const LS=(()=>{const M={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('andromeda'))M[k]=localStorage.getItem(k)}}catch(e){}
+let dbd=null,ready=false,tm=null,why='',savedAt=null,loaded=false;
+const hm=d=>new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const er=e=>e?((e.code?e.code+': ':'')+(e.message||String(e))):'erro desconhecido';
+const wt=(p,ms)=>Promise.race([p,new Promise((_,j)=>setTimeout(()=>j(new Error('sem resposta da conta')),ms))]);
+function ui(t,c){['svs','svm'].forEach(i=>{const el=document.getElementById(i);if(el){el.textContent=t;el.style.color=c=='er'?'var(--er)':c=='ok'?'var(--ok)':'var(--mu)'}})}
+async function write(verify){if(!dbd||!ready)return false;try{const s=JSON.stringify(M);await dbd.set({state:s,at:Date.now()});
+ if(verify){const r=await dbd.get();if(!r.exists||(r.data()||{}).state!==s)throw new Error('a conta não devolveu o que foi salvo')}
+ savedAt=Date.now();ui('✅ Salvo '+(verify?'e confirmado ':'')+'às '+hm(savedAt),'ok');return true}catch(e){ui('❌ Não salvou: '+er(e),'er');return false}}
+const push=()=>{if(!dbd||!ready){ui('⚠️ Só neste aparelho'+(why?' ('+why+')':'')+'. Toque em Salvar.','er');return}ui('⏳ Salvando…');clearTimeout(tm);tm=setTimeout(()=>write(false),500)};
+async function init(){ready=false;why='';try{
+ if(typeof claude==='undefined'||!claude.use){why='página fora do Claude';return}
+ const db=await wt(claude.use('db'),6000),user=await wt(claude.use('user'),6000);
+ if(!db){why='banco de dados não liberado';return}if(!user){why='usuário não identificado';return}
+ const id=await wt(user.id(),6000);if(!id){why='usuário não identificado';return}
+ dbd=db.doc('data/users/'+id+'/state');const sn=await wt(dbd.get(),8000);
+ if(sn.exists){const o=JSON.parse((sn.data()||{}).state||'{}');Object.keys(M).forEach(k=>delete M[k]);Object.assign(M,o);try{Object.keys(o).forEach(k=>localStorage.setItem(k,o[k]))}catch(e){}loaded=true;savedAt=(sn.data()||{}).at||null}
+ ready=true;if(!sn.exists){tm=setTimeout(()=>write(false),500)}}catch(e){ready=false;why=er(e)}}
+async function save(){ui('⏳ Salvando…');
+ if(!ready){try{const pm=await claude.use('permissions');if(pm){const s=await pm.state('db');if(s!='granted')await pm.request(['db'])}}catch(e){}await init()}
+ if(!ready){ui('❌ Não salvou: '+(why||'sem conexão com a conta')+'. Seus dados ficam só neste aparelho.','er');return false}
+ return write(true)}
+function refresh(){if(ready)ui(loaded&&savedAt?'☁️ Carregado da sua conta (salvo em '+hm(savedAt)+')':'☁️ Conectado à sua conta. Toque em Salvar para confirmar.',loaded?'ok':'');else ui('⚠️ Só neste aparelho ('+(why||'sem conexão')+'). Toque em Salvar para tentar de novo.','er')}
+return{getItem:k=>(k in M)?M[k]:null,
+setItem(k,v){M[k]=String(v);try{localStorage.setItem(k,String(v))}catch(e){}push()},
+removeItem(k){delete M[k];try{localStorage.removeItem(k)}catch(e){}push()},
+flush:()=>write(false),save,init,refresh,mode:()=>ready}})();
+window.addEventListener('pagehide',()=>{LS.flush()});
+(async function(){await LS.init();const ld=document.getElementById('ld');if(ld)ld.remove();LS.refresh();const sb=document.getElementById('svbtn');if(sb)sb.addEventListener('click',async()=>{sb.disabled=true;try{await LS.save()}finally{sb.disabled=false}});
+
+const $=id=>document.getElementById(id);
+const defs=[[2651.54,2400,700],[3000,3300,700],[3500,3100,650]];
+const nomes={ORD:'Ordinário',PROT:'Proteção',EMER:'Emergência'};
+const cls={ORD:'ok',PROT:'wa',EMER:'er'};
+const f=n=>n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const p=n=>n.toFixed(1).replace('.',',')+'%';
+let RG=['ORD','ORD','ORD'],GS=[false,false,false],IMP=.8;
+let h='';
+function inv(v,r){const s=(t,k)=>`<div class="row" style="padding-left:14px;color:var(--mu)"><span>↳ ${t}</span><b>${f(v*k)}</b></div>`;const e='ETFs 60% (ACWI11 e DIVO11 principais, NASD11 complementar)';
+if(r=='PROT'&&window.CHB)return s('ETFs 50% (ACWI11 e DIVO11 principais, NASD11 complementar)',.5)+s('Colchão 50% (Tesouro Selic ou CDB liq. diária)',.5)+`<div class="note" style="padding-left:14px">Art. 10º-C: sem FIIs enquanto o colchão estiver abaixo da meta.</div>`;
+return s(e,.6)+s('FIIs 20%',.2)+s(window.CHB?'Renda fixa 20% → colchão primeiro (Selic/CDB)':'Renda fixa 20% (colchão + Tesouro IPCA+)',.2)}
+defs.forEach((d,i)=>{h+=`<div class="card"><h2 id="mh${i}">📅 Mês ${i+1}</h2><div class="note">Digite receita, despesa e fatura: o app mostra o fluxo de caixa do mês e o regime.</div><div style="margin-bottom:8px"><label>🗓️ Mês e ano de referência</label><input id="mr${i}" type="month"></div><div class="g">
+<div><label>Receita</label><input id="rc${i}" type="number" value="${d[0]}"></div>
+<div><label>Despesa</label><input id="ds${i}" type="number" value="${d[1]}"></div>
+<div><label>Fatura cartão</label><input id="fa${i}" type="number" value="${d[2]}"></div>
+</div><div id="o${i}"></div><div style="margin-top:10px;border-top:1px dashed var(--bd);padding-top:8px"><label>🎚️ E se eu gastar <b id="wp${i}">0%</b> a menos neste mês?</label><input type="range" id="ws${i}" min="0" max="40" step="1" value="0"><div id="wr${i}" class="note" style="margin-top:4px"></div></div></div>`});
+$('meses').innerHTML=h;
+function regFlow(x){return x>=0?'ORD':x>-30?'PROT':'EMER'}
+function aloc(r,g,rec){
+ if(r=='EMER')return g?[['Reserva Flex ordinária',10],['Reserva Flex ou Selic (uso imediato)',16],['Reserva Obrigatória 🔒',24],['Vida',50]]:[['Reserva Flex ordinária',10],['Reserva Flex ou Selic (uso imediato)',12],['Reserva Obrigatória 🔒',18],['Vida',60]];
+ if(r=='PROT')return g?[['Investimentos',25],['Reserva Flex',25],['Vida',50]]:[['Investimentos',20],['Reserva Flex',20],['Vida',60]];
+ return g?[['Investimentos',40],['Reserva Flex',10],['Vida',50]]:[['Investimentos',30],['Reserva Flex',10],['Vida',60]];
+}
+function calc(){
+ let reg=$('r0').value,R=0,D=0,out=[];
+ const lim=+$('g1').value,teto=+$('teto').value,clt=+$('clt').value;
+ for(let i=0;i<3;i++){
+  const rc=+$('rc'+i).value,ds=+$('ds'+i).value,fa=+$('fa'+i).value;
+  const fl=rc>0?(rc-ds)/rc*100:0,g=ds>=lim;
+  RG[i]=reg;GS[i]=g;const a=aloc(reg,g,rc),cor=['var(--ac)','var(--ok)','var(--wa)','var(--mu)'];
+  const lim$=clt*teto/100,cardOk=fa<=lim$;
+  const fc=fl>=0?'ok':fl>-30?'wa':'er';
+  let o=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 0 8px"><span style="font-size:24px;font-weight:700" class="${fc}">${fl>=0?'🟢':fl>-30?'🟠':'🔴'} ${p(fl)}</span><span class="tag ${cls[reg]}">${nomes[reg]}${g?' + Gatilho 1':''}</span></div>`;
+  o+=`<div class="row"><span>💰 Receita</span><b>${f(rc)}</b></div><div class="row"><span>💸 Despesa</span><b>${f(ds)}</b></div><div class="row"><span>📊 Fluxo de caixa do mês</span><b class="${fc}">${f(rc-ds)} (${p(fl)})</b></div>`;
+  if(reg=='EMER')o+=`<div class="note">🚨 Suspensos gastos não essenciais e novos parcelamentos.</div>`;
+  $('o'+i).innerHTML=o;
+  R+=rc;D+=ds;out.push(fl);
+  reg=regFlow(fl);
+ }
+ const fl=R>0?(R-D)/R*100:0;
+ let tfp,cl,c,imp,forc;
+ if(fl>=20){tfp=100;cl='Sólido';c='ok';imp=.8;forc=null}
+ else if(fl>=0){tfp=75;cl='Equilibrado';c='ok';imp=.65;forc=null}
+ else if(fl>=-10){tfp=40;cl='Pressionado';c='wa';imp=.5;forc='PROT'}
+ else{tfp=0;cl='Crítico';c='er';imp=.3;forc='EMER'}
+ const t18=fl>25?'Excepcional':fl>=15?'Forte':fl>=0?'Consistente':fl>=-10?'Pressionado':'Crítico';
+ const per0=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),pib=R/ltDias(per0)*90;let pv=null;try{for(let i=LT.length-1;i>=0;i--){if(LT[i].p!==per0){pv=LT[i];break}}}catch(e){}
+ const vr=pv?pibVar(pib,ltPib(pv)):null;
+ const pibH=`<div class="row"><span>PIB Financeiro</span><b>${f(pib)}</b></div><div class="row"><span>Variação vs anterior</span><b class="${vr===null?'':vr>=0?'ok':'wa'}">${vr===null?'—':p(vr)+(vr>=0?' 📈 produzi mais':' 📉 produzi menos')}</b></div><div class="note">PIB = receita do trimestre ÷ dias do período × 90. Apenas informativo: não define regime nem altera o Imposto Disciplinar.</div>`;
+ const prox=forc||regFlow(out[2]);window.FORC=forc;window.PROX=prox;IMP=imp;window.RT=R;avulsas();
+ const ico={'Sólido':'🏆','Equilibrado':'🙂','Pressionado':'⚠️','Crítico':'🚨'}[cl];
+ const bxx=(t,i)=>`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:10px;font-variant-numeric:tabular-nums'><div style="font-weight:700;padding:6px 0">${t}</div>${i}</div>`;
+ $('tri').innerHTML=`<h2>🌡️ Leitura Trimestral (Art. 13º)</h2><div class="note">Fluxo de caixa acumulado dos 3 meses: define o TFP (Art. 13º), o imposto (Art. 11º) e, se negativo, o regime do mês seguinte (Art. 18º).</div>
+ <div style='display:flex;gap:8px;margin:6px 0 2px'><div style='flex:1;text-align:center;border:2px solid var(--ac);border-radius:12px;padding:10px 4px'><div style='font-size:12px;color:var(--mu)'>Faixa do TFP · Art. 13º</div><div style='font-size:19px;font-weight:700' class='${c}'>${ico} ${cl}</div></div><div style='flex:1;text-align:center;border:1px solid var(--bd);border-radius:12px;padding:10px 4px'><div style='font-size:12px;color:var(--mu)'>Classificação · Art. 18º</div><div style='font-size:15px;font-weight:700' class='${c}'>Trimestre ${t18}</div></div></div>
+ ${bxx('📊 Resultado do trimestre',`<div class="row"><span>💰 Receita</span><b>${f(R)}</b></div><div class="row"><span>💸 Despesa</span><b>${f(D)}</b></div><div class="row"><span>📊 Fluxo acumulado</span><b class="${c}">${p(fl)} (${f(R-D)})</b></div>`)}
+ ${bxx('🌡️ TFP (Art. 13º) e Imposto (Art. 11º)',`<div class="row"><span>🌡️ TFP</span><b class="${c}">${tfp} pts – ${cl}</b></div><div class="row"><span>🏷️ Classificação</span><b class="${c}">Trimestre ${t18}</b></div><div class="row"><span>⚖️ Imposto Disciplinar</span><b>${f(R*imp/100)} · ${String(imp).replace('.',',')}%</b></div>${R*imp/100>0?`<div class="row"><span>💰 Pago do imposto</span><b class="${R*imp/100-impPago()<=.005?'ok':'wa'}">${f(impPago())} · falta ${f(Math.max(0,R*imp/100-impPago()))}</b></div>`:''}<div class="note">📈 Destino (Art. 11º): cotas de ACWI11, DIVO11 ou NASD11, conforme couber; sem valor para uma cota, acumula.</div>`)}
+ ${bxx('🏦 PIB Financeiro (Art. 18º-A)',pibH)}
+ ${bxx('🚦 Próximo mês (Art. 18º)',`<div class="row"><span>🚦 Regime do 1º mês seguinte</span><span class="tag ${cls[prox]}">${nomes[prox]}${forc?' (forçado)':''}</span></div><div class="note">${forc?'Regime forçado vale só no 1º mês; do 2º em diante volta à apuração mensal.':'Sem regime forçado: segue a apuração mensal do último mês.'}</div>`)}`;
+}
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',calc));
+function addAv(d,v){const r=document.createElement('div');r.style.cssText='display:grid;grid-template-columns:1fr 112px 38px;gap:6px;margin-top:6px';r.innerHTML='<input placeholder="✍️ Nome da receita (ex.: freela)"><input type="number" class="v" inputmode="decimal" placeholder="R$"><button class="ib" aria-label="Remover">✕</button>';if(d)r.children[0].value=d;if(v)r.children[1].value=v;r.children[2].onclick=()=>{r.remove();avulsas();avSave()};$('avl').appendChild(r)}
+function avSave(){try{LS.setItem('andromeda_av',JSON.stringify({m:$('avm').value,g:$('avrg').value,it:[...document.querySelectorAll('#avl>div')].map(r=>[r.children[0].value,r.children[1].value])}))}catch(e){}}
+function avulsas(){
+ const m=+$('avm').value,its=[...document.querySelectorAll('#avl>div')].map(r=>[r.children[0].value.trim(),+r.children[1].value||0]),tot=its.reduce((a,b)=>a+b[1],0),clt=+$('clt').value||0;
+ const a=aloc(RG[m],GS[m],tot),cor=['#2a78d6','#0f8a60','#6250d6','#898781','#c4501f'],ct=window.COLTOT||0,cm=window.COLMETA||0;
+ $('avch').innerHTML=[0,1,2].map(k=>`<button class="sg${k==m?' on':''}" data-m="${k}">📅 ${ML(k)}<small>${nomes[RG[k]]}${GS[k]?' + G1':''}</small></button>`).join('');
+ $('avq').innerHTML=['Freela','Bônus','Venda','Cashback','Outro'].map(x=>`<button class="ch" data-q="${x}" style="background:var(--bg)">${{Freela:'💻',Bônus:'🎁',Venda:'🏷️',Cashback:'⛽',Outro:'➕'}[x]} ${x}</button>`).join('');
+ const rnm=its.filter(x=>x[1]>0).map(x=>(x[0]||'Receita sem nome')+' ('+f(x[1])+')').join(', '),sn=its.some(x=>x[1]>0&&!x[0]),em=n=>n.startsWith('Invest')?'📈 ':n.startsWith('Reserva Flex')?'💼 ':n.startsWith('Vida')?'🏖️ ':n.includes('Obrigat')?'🔒 ':'',cash=its.filter(x=>/cashback/i.test(x[0])).reduce((s,x)=>s+x[1],0),base=tot-cash,inv0=(a[0]&&a[0][0]=='Investimentos')?base*a[0][1]/100:0,low=cm>0&&ct<cm;
+ const colAdd=RG[m]=='PROT'&&low?inv0*.5:low?inv0*.2:0,vida=a.find(x=>x[0]=='Vida'),va=vida?base*vida[1]/100:0;
+ let o=`<div style="text-align:center;border:2px solid var(--ac);border-radius:14px;padding:10px"><div style="font-size:12px;color:var(--mu)">💵 Total de receitas avulsas</div><div style="font-size:28px;font-weight:700">${f(tot)}</div><div style="font-size:12px;color:var(--mu)">${clt>0&&tot>0?'equivale a '+p(tot/clt*100)+' da renda CLT · ':''}<span class="tag ${cls[RG[m]]}">${nomes[RG[m]]}${GS[m]?' + Gatilho 1':''}</span></div></div>`;
+ if(base>0){o+=`<div class="bar" style="height:14px;margin:12px 0 4px">${a.map((x,k)=>`<div style="flex:${x[1]};background:${cor[k%5]}"></div>`).join('')}</div><div style="display:flex;flex-wrap:wrap;gap:3px 12px;font-size:12px;color:var(--mu);margin-bottom:8px">${a.map((x,k)=>`<span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cor[k%5]};margin-right:4px"></i>${em(x[0])}${x[0].replace(' ordinária','')} ${x[1]}%</span>`).join('')}</div>`}
+ o+='<div style="border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:10px;font-variant-numeric:tabular-nums">';
+ a.forEach((x,k)=>{o+=`<div class="row"><span>${em(x[0])}${x[0]} (${x[1]}%)</span><b>${f(base*x[1]/100)}</b></div>`;if(k==0&&RG[m]!='EMER')o+=inv(base*x[1]/100,RG[m])});if(cash>0)o+=`<div class="row"><span>⛽ Cashback → 100% ETFs</span><b>${f(cash)}</b></div>`;o+='</div>';
+ if(colAdd>0)o+=`<div class="row"><span>💧 Vai para o colchão</span><b class="ok">+ ${f(colAdd)} → ${f(ct+colAdd)} (${Math.round((ct+colAdd)/cm*100)}% da meta)</b></div>`;
+ if(va>0){let rest=va;const SG=[],tv=clt*(+$('teto').value||0)/100,fa=+$('fa'+m).value||0,im=(window.RT||0)*IMP/100,a1=$('ltp1').value,a2=$('ltp2').value,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0);
+  if(tv>0&&fa>tv&&rest>0){const x=Math.min(rest,fa-tv);SG.push(['💳','Abater da fatura de '+ML(m)+' (passou '+f(fa-tv)+' do teto)',x]);rest-=x}
+  if(im>ap&&rest>0){const x=Math.min(rest,im-ap);SG.push(['⚖️','Reservar para o Imposto Disciplinar (faltam '+f(im-ap)+')',x]);rest-=x}
+  if(cm>0&&ct+colAdd<cm&&rest>0){const x=Math.min(rest,cm-ct-colAdd);SG.push(['💧','Reforçar o colchão (faltam '+f(cm-ct-colAdd)+')',x]);rest-=x}
+  o+=`<div style="border:2px solid var(--ac);border-radius:12px;padding:6px 12px;margin-top:10px"><div style="font-weight:700;padding:4px 0">💡 O que eu faria com a parte livre (${f(va)})</div>`+(SG.length?SG.map(s=>`<div class="row"><span>${s[0]} ${s[1]}</span><b>${f(s[2])}</b></div>`).join(''):'<div class="note" style="margin:0 0 4px">Sem prioridades abertas: a parte livre é sua. 🎉</div>')+`<div class="row"><span>🎉 Sobra para gastar</span><b class="ok">${f(rest)}</b></div><div class="note" style="margin:4px 0">Sugestão do app, a decisão é sua.</div></div>`}
+ if(cash>0)o+=`<div class="note">⛽ Art. 10º-B: os ${f(cash)} de cashback são 100% reinvestidos em ETFs e ficam fora da divisão acima.</div>`;
+ if(RG[m]=='EMER')o+=`<div class="note">🚨 Estado de Emergência: o que seria investido vira liquidez (40% Reserva Flex ou Selic e 60% Reserva Obrigatória).</div>`;
+ else if(RG[m]=='PROT')o+=`<div class="note">🟠 Regime de Proteção: dos investimentos, 50% ETFs e 50% colchão enquanto ele estiver abaixo da meta.</div>`;
+ if(!tot)o+=`<div class="note">Adicione um valor para ver a divisão.</div>`;
+ o+=`<div class="note">Estas receitas já estão incluídas na receita do mês e não entram de novo na Leitura Trimestral. Este card serve só para ver quanto separar.</div>`;
+ {const dp=100-(vida?vida[1]:0),dev=base*dp/100,gs=$('avrg').value,got=+gs||0,has=gs!=='';let r='';window.AVDEV=dev;window.AVREC=null;
+ $('avrq').innerHTML=base>0?'<span class="note" style="margin-right:6px">⚡ % do devido:</span>'+[100,75,50,25,0].map(x=>`<button class="ch" data-pct="${x}" style="background:var(--bg)">${x}%</button>`).join(''):'';
+ if(base>0){r+=`<div class="row" style="border-top:0"><span>📌 Devido (tudo, menos a parte Vida)</span><b>${f(dev)} · ${p(dp)} da receita</b></div>`;
+  if(has){const falt=Math.max(0,dev-got),gp=got/base*100,fp=falt/base*100,cp=dev>0?got/dev*100:100;
+   r+=`<div class="row"><span>✅ Recolhido</span><b class="${got>=dev-.005?'ok':'wa'}">${f(got)} · ${p(gp)} da receita</b></div><div style="height:10px;border-radius:6px;background:var(--bd);overflow:hidden;margin:4px 0"><div style="height:100%;width:${Math.min(100,cp)}%;background:var(${cp>=100?'--ok':'--wa'})"></div></div><div class="note" style="margin:0 0 6px">${p(cp)} do devido foi recolhido</div>`;
+   if(falt>.005){const k='rec|'+m+'|'+Math.round(base*100)+'|'+Math.round(got*100),rec={base,dev,got,falt,m:m+1,ml:ML(m),nome:rnm,reg:RG[m],pg:[]};window.AVREC={k,sg:'PRC',ds:recDs(rec),js:'Recolhimento parcial da receita avulsa; saldo a pagar aos poucos.',fd:RG[m]=='EMER'?'Art. 6º':RG[m]=='PROT'?'Art. 5º':'Art. 3º; Art. 4º',st:0,rec};
+    r+=`<div class="row"><span>⚠️ Faltou recolher</span><b class="er">${f(falt)} · ${p(fp)} da receita</b></div><div class="note" style="color:var(--er)">🚨 Ocorrência identificada: o saldo vai para o Livro de Pendências e você paga aos poucos.</div>`+(sn?'<div class="note">✍️ Dê um nome às receitas acima para identificar a pendência no Livro.</div>':'')+((LV||[]).some(x=>x.k==k)?'<div class="note" style="color:var(--ok)">✅ Ocorrência já registrada no Livro.</div>':'<button class="bt pr" id="avrb" style="margin-top:6px">📑 Registrar ocorrência no Livro</button>')}
+   else r+=`<div class="note" style="color:var(--ok)">🎉 Recolhimento completo${got>dev+.005?' (recolheu '+f(got-dev)+' a mais)':''}.</div>`}
+  else r+='<div class="note">Informe o valor recolhido para conferir.</div>'}
+ else r+='<div class="note">Adicione receitas para conferir o recolhimento.</div>';
+ const pr=(LV||[]).filter(x=>x.rec).map(x=>({x,res:x.rec.falt-(x.rec.pg||[]).reduce((s,y)=>s+y[1],0)})).filter(o=>o.res>.005);
+ if(pr.length)r+=`<div style="border:2px dashed var(--wa);border-radius:10px;padding:8px 10px;margin-top:10px"><b>⏳ Saldo de recolhimento a pagar aos poucos</b>`+pr.map(o=>`<div class="row"><span>📅 ${o.x.rec.ml||'Mês '+o.x.rec.m} · ${o.x.rec.nome||'sem nome'}</span><b class="wa">${f(o.res)} · ${p(o.x.rec.base>0?o.res/o.x.rec.base*100:0)} da receita</b></div>`).join('')+`<div class="note" style="margin:6px 0 0">Pague pelo registro no Livro de Pendências (botão ➕ Pagar).</div></div>`;
+ $('avrr').innerHTML=r}
+ $('avo').innerHTML=o;
+ const sp=+$('avsl').value||0,ex=va*sp/100,nc=ct+colAdd+ex;$('avsv').textContent=sp+'%';
+ $('avsr').innerHTML=va>0?(sp?`💧 +${f(ex)} → colchão em <b>${f(nc)}</b>${cm?' ('+Math.round(nc/cm*100)+'% da meta)':''} · 💸 livre fica <b>${f(va-ex)}</b>`:'Mova a barra para guardar mais da sua parte livre no colchão.'):'Adicione receitas para usar a barra.'}
+$('avch').addEventListener('click',e=>{const b=e.target.closest('.sg');if(b){$('avm').value=b.dataset.m;avulsas();avSave()}});
+$('avq').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(b){const q=b.dataset.q=='Outro'?'':b.dataset.q;let r=[...document.querySelectorAll('#avl>div')].find(x=>!x.children[0].value&&!x.children[1].value);if(r){r.children[0].value=q}else{addAv(q);r=$('avl').lastElementChild}avSave();avulsas();r.children[1].focus()}});
+(function(){let s=null;try{s=JSON.parse(LS.getItem('andromeda_av')||'null')}catch(e){}if(s&&s.it&&s.it.length){$('avm').value=s.m||'0';$('avrg').value=s.g||'';s.it.forEach(x=>addAv(x[0],x[1]))}else{addAv()}})();
+$('avb').addEventListener('click',()=>{addAv();avSave()});
+document.addEventListener('input',()=>{avulsas();avSave()});
+function txt(e){return [...e.querySelectorAll('.row')].filter(r=>!r.style.paddingLeft&&!/\(\d+%\)\s*$/.test(r.children[0].textContent)).map(r=>[...r.children].map(c=>c.textContent).join(': ')).join('\n')}
+function resumo(){
+ const bt=b=>[...b.children].map(c=>{if(c.classList.contains('row')){const k=[...c.children],v=k[1],ic=v&&v.classList?(v.classList.contains('ok')?'✅ ':v.classList.contains('wa')?'⚠️ ':v.classList.contains('er')?'🚨 ':''):'';return k.map((x,j)=>{const tx=x.textContent.trim().replace(/\s+/g,' ');return (j==1&&ic&&!/^(✅|⚠️|🚨)/.test(tx)?ic:'')+tx}).filter(Boolean).join(': ')}return [...(c.children.length?c.children:[c])].map(x=>x.textContent.trim().replace(/\s+/g,' ')).filter(Boolean).join(': ')}).filter(Boolean).join('\n');
+ const S=window.SIG||[],em={er:'🚨',wa:'⚠️','in':'💡',ok:'✅'},dv='\n\n━━━━━━━━━━━━━━\n';
+ let s='🌌✨ SIMULAÇÃO ANDRÔMEDA ✨🌌\n🗓️ '+new Date().toLocaleDateString('pt-BR');
+ s+=dv+'🔥 DESTAQUES\n'+(S.slice(0,5).map(x=>em[x[0]]+' '+x[1]).join('\n')||'✅ Tudo em ordem por aqui 🎉');
+ for(let i=0;i<3;i++){const rc=+$('rc'+i).value||0,ds=+$('ds'+i).value||0,fa=+$('fa'+i).value||0,fl=rc>0?(rc-ds)/rc*100:0,cp=rc>0?ds/rc*100:0;
+  s+=dv+'📅 '+ML(i).toUpperCase()+' · 🚦 '+nomes[RG[i]]+(GS[i]?' + Gatilho 1':'')+'\n💰 Receita: '+f(rc)+'\n💸 Despesa: '+f(ds)+'\n💳 Fatura do cartão: '+f(fa)+'\n📊 Fluxo de caixa: '+(fl>=0?'✅ ':fl>-30?'⚠️ ':'🚨 ')+p(fl)+' ('+f(rc-ds)+')'}
+ s+=dv+'🌡️ LEITURA TRIMESTRAL';[...$('tri').querySelectorAll(':scope>div')].filter(d=>d.querySelector('.row')).forEach(b=>{s+='\n\n'+bt(b)});
+ {const gt=gastoTri();if(gt)s+=dv+'💸 GASTO MÉDIO MENSAL\n• Trimestre atual: '+f(gt.avg)+(gt.pv>0?'\n• Trimestre anterior: '+f(gt.pv)+'\n• Variação: '+gt.txt:'')}
+ [...document.querySelectorAll('#pan>div')].filter(d=>d.style.border&&!d.dataset.hl).slice(4).forEach(b=>{s+=dv+bt(b)});
+ const pj=$('pjt').value;if(pj)s+=dv+pj;
+ const ev=document.querySelector('#evx>div');if(ev)s+=dv+bt(ev);
+ s+=dv+'🚀 Andrômeda · protege, impulsiona e evolui ✨';
+ $('res').value=s}
+$('cp').addEventListener('click',async()=>{
+ resumo();const t=$('res').value;
+ try{await navigator.clipboard.writeText(t);$('cpm').textContent='Copiado!'}
+ catch(e){$('res').select();try{document.execCommand('copy');$('cpm').textContent='Copiado!'}catch(e2){$('cpm').textContent='Segure no texto e copie.'}}
+});
+document.addEventListener('input',resumo);
+function flex(){
+ const s=+$('fxs').value||0,r=+$('fxr').value||0,lv=s*.5;
+ let o=`<div class="row"><span>Retirada livre (até 50% do saldo)</span><b class="ok">${f(lv)}</b></div>`;
+ o+=`<div class="row"><span>Acima disso</span><b class="wa">exige registro no Livro</b></div>`;
+ if(r>0){const ok=r<=lv;o+=`<div class="row"><span>Retirar ${f(r)}</span><b class="${ok?'ok':r<=s?'wa':'er'}">${ok?'✅ livre, sem registro':r<=s?'⚠️ registrar no Livro de Pendências':'🚫 maior que o saldo'}</b></div>`;if(ok)o+=`<div class="row"><span>Saldo após a retirada</span><b>${f(s-r)}</b></div>`}
+ const mtr=s>0&&r>0?`<div style="position:relative;height:14px;border-radius:7px;background:var(--bd);overflow:hidden;margin:2px 0 4px"><div style="height:100%;width:${Math.min(100,r/s*100)}%;background:var(${r<=lv?'--ok':r<=s?'--wa':'--er'})"></div><div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:var(--tx)"></div></div><div class="note" style="margin:0 0 8px">A linha marca 50% do saldo: até ela a retirada é livre.</div>`:'';
+ $('fxo').innerHTML=s>0?mtr+o:'<div class="note">Digite o saldo para ver quanto pode retirar.</div>';
+ const big=r>lv&&r<=s;$('fxf').style.display=big?'block':'none';
+ if(big){const m=$('fxm').value.trim()||'(preencher)',d=$('fxd').value.trim()||'(preencher)';
+ $('fxt').value='📝 Registro – Retirada da Reserva Flex acima de 50% (Art. 8º)\nData: '+new Date().toLocaleDateString('pt-BR')+'\nSaldo antes: '+f(s)+'\nValor retirado: '+f(r)+' ('+p(r/s*100)+' do saldo)\nSaldo após: '+f(s-r)+'\nMotivo: '+m+'\nDestino do valor: '+d+'\nRecomposição: automática (Art. 9º)'}}
+$('fxc').addEventListener('click',async()=>{const t=$('fxt').value;try{await navigator.clipboard.writeText(t);$('fxcm').textContent='Copiado!'}catch(e){$('fxt').select();try{document.execCommand('copy');$('fxcm').textContent='Copiado!'}catch(e2){$('fxcm').textContent='Segure no texto e copie.'}}});
+document.addEventListener('input',flex);
+flex();
+const SV=['clt','g1','teto','r0','rc0','rc1','rc2','ds0','ds1','ds2','fa0','fa1','fa2','fxs','ltp1','ltp2','ltc','cat','cot','mr0','mr1','mr2','pjnv','pj0rn','pj0fx','pj0pc','pj0fa','pj0ou','pj0ex','pj0vr','pj1rn','pj1fx','pj1pc','pj1fa','pj1ou','pj1ex','pj1vr','pj2rn','pj2fx','pj2pc','pj2fa','pj2ou','pj2ex','pj2vr'];
+function save(){try{const o={};SV.forEach(k=>o[k]=$(k).value);LS.setItem('andromeda',JSON.stringify(o))}catch(e){}}
+function load(){try{const o=JSON.parse(LS.getItem('andromeda')||'{}');SV.forEach(k=>{if(o[k]!==undefined)$(k).value=o[k]})}catch(e){}}
+function extra(){
+ const R=[0,1,2].reduce((a,i)=>a+(+$('rc'+i).value||0),0),d12=(+$('ds0').value||0)+(+$('ds1').value||0);
+ let m='';{
+ const d3=+$('ds2').value||0,fa_=R-(d12+d3),fl=R>0?fa_/R:0;
+ const FX=[['Sólido','🏆','ok',.8],['Equilibrado','🙂','ok',.65],['Pressionado','⚠️','wa',.5],['Crítico','🚨','er',.3]];
+ const cur=fl>=.2?0:fl>=0?1:fl>=-.1?2:3,cc=FX[cur],pc2=x=>x.toFixed(2).replace('.',',')+'%';
+ m+=`<div class='row' style='border-top:0'><span>${cc[1]} O trimestre fecha como</span><b class='${cc[2]}'>${cc[0]}</b></div><div class='row'><span>📊 Fluxo do trimestre</span><b>${f(fa_)} (${p(fl*100)})</b></div>`;
+ m+=`<div style='margin:12px 0 2px;font-size:13px;color:var(--mu)'>Escada de faixas, com o fluxo mínimo e o Imposto Disciplinar de cada uma:</div>`+FX.map((x,i)=>{const rule=i==0?'fluxo a partir de '+f(R*.2)+' (+20%)':i==1?'fluxo a partir de R$ 0,00':i==2?'fluxo a partir de '+f(-R*.1)+' (−10%)':'fluxo abaixo de '+f(-R*.1);return `<div style='display:flex;justify-content:space-between;gap:8px;padding:8px 10px;margin-top:6px;border-radius:10px;border:${i==cur?'2px solid var(--ac)':'1px solid var(--bd)'}'><span>${x[1]} <b>${x[0]}</b>${i==cur?'<br><span style="font-size:12px;color:var(--ac)">◀ você está aqui</span>':''}</span><span style='font-size:12px;color:var(--mu);text-align:right'>${rule}<br>imposto ${pc2(x[3])} = ${f(R*x[3]/100)}</span></div>`}).join('');
+ const fs=[['Sólido',.2],['Equilibrado',0],['Pressionado',-.1]].map(x=>{const mx_=R*(1-x[1])-d12;return{n:x[0],mx:mx_,so:mx_-d3}});
+ const ix=fs.findIndex(x=>x.so>=0),up=ix==-1?fs[2]:ix>0?fs[ix-1]:null;
+ if(up){const nd=-up.so,cut=d3>0?nd/d3*100:0,near=nd<=R*.03;
+  m+=`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:12px'><div class='row' style='border-top:0;font-weight:700'><span>🎯 Para subir para ${up.n}</span></div><div class='row'><span>💸 Gasto máximo em ${ML(2)}</span><b>${up.mx>=0?f(up.mx):'inviável'}</b></div><div class='row'><span>✍️ Você digitou</span><b>${f(d3)}</b></div><div class='row'><span>✂️ Falta cortar</span><b class='${near?'wa':'er'}'>${f(nd)}</b></div><div style='height:10px;border-radius:6px;background:var(--bd);overflow:hidden;margin:8px 0'><div style='height:100%;width:${Math.max(0,Math.min(100,100-cut))}%;background:var(--ok)'></div></div><div class='note'>${near?'🔥 Está perto: um pequeno corte já muda a faixa.':'Ainda longe: precisa cortar '+p(cut)+' de '+ML(2)+'.'}</div></div>`}
+ else m+=`<div class='row'><span>🏆 Você já está na melhor faixa</span><b class='ok'>Sólido</b></div>`;
+ if(ix>=0){const dn=ix<2?fs[ix+1].n:'Crítico';m+=`<div class='row'><span>🛡️ Margem antes de piorar para ${dn}</span><b class='ok'>${f(fs[ix].so)}</b></div>`}
+}
+$('mto').innerHTML=m;window.MWD={R,d12,d3:+$('ds2').value||0};mwSync();
+ const st=[25,20,15,10],t=+$('teto').value,i=st.indexOf(t),clt=+$('clt').value;
+ let c;
+ if(i==st.length-1)c='<div class="row"><span>Teto já está no mínimo</span><b class="ok">10%</b></div>';
+ else if(true)c=`<div class="row"><span>Próximo degrau possível</span><b class="ok">${t}% → ${st[i+1]}% (${f(clt*st[i+1]/100)})</b></div><div class="note">Máximo de 1 degrau por Revisão Trimestral, e a decisão é do Legislativo, nunca automática.</div>`;
+ else c=`<div class="row"><span>Teto permanece</span><b class="wa">${t}% (${f(clt*t/100)})</b></div><div class="note">Sem o teto respeitado no trimestre anterior, não há redução.</div>`;
+  {const tv=clt*t/100,fa=[0,1,2].map(k=>+$('fa'+k).value||0),allOk=fa.every(v=>v<=tv),mx=Math.max(...fa),last=i==st.length-1;
+ const bar=(k,v)=>{const pc=tv>0?v/tv*100:0,ok=v<=tv;return `<div style='margin:10px 0 2px;display:flex;justify-content:space-between;gap:8px;font-size:14px'><span>💳 ${ML(k)}</span><b class='${ok?'ok':'er'}'>${f(v)} ${ok?'✅ dentro':'⚠️ passou '+f(v-tv)}</b></div><div style='height:12px;border-radius:7px;background:var(--bd);overflow:hidden'><div style='height:100%;width:${Math.min(100,pc)}%;background:var(${ok?'--ok':'--er'})'></div></div>`};
+ let h=`<div style='display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0'>${st.map(x=>`<span style='padding:6px 12px;border-radius:99px;font-size:13px;border:${x==t?'2px solid var(--ac)':'1px solid var(--bd)'};font-weight:${x==t?700:400}'>${x}%</span>`).join('<span style="color:var(--mu)">→</span>')}</div><div class='row' style='border-top:0'><span>🎚️ Teto vigente (${t}%)</span><b>${f(tv)}</b></div>`;
+ h+=fa.map((v,k)=>bar(k,v)).join('');
+ if(last)h+=`<div class='card' style='margin-top:12px'>🏁 O teto já está no mínimo (10%).</div>`;
+ else{const nt=clt*st[i+1]/100,fit=fa.filter(v=>v<=nt).length;
+  h+=allOk?`<div class='card' style='margin-top:12px;border:2px solid var(--ok)'><b>✅ Pode propor ${t}% → ${st[i+1]}% (${f(nt)})</b><div class='note' style='margin:6px 0 0'>Faturas que já cabem no novo teto: <b class='${fit==3?'ok':'wa'}'>${fit} de 3</b>. ${fit==3?'Tranquilo para aprovar.':'Sua maior fatura ('+f(mx)+') passa do novo teto em '+f(mx-nt)+'. Vale baixar antes de aprovar.'}</div></div>`:`<div class='card' style='margin-top:12px;border:2px solid var(--wa)'><b>⏳ Ainda não: o teto permanece ${t}%</b><div class='note' style='margin:6px 0 0'>As faturas dos 3 meses precisam ficar até ${f(tv)}. Sua maior fatura passa em ${f(mx-tv)}.</div></div>`;
+  h+=`<div class='note'>Só na Revisão Trimestral, 1 degrau por vez, decisão do Legislativo.</div>`}
+ const rg=$('r0').value,g1v=+$('g1').value||0,rd={ORD:'📗 Ordinário: Nível Normal (30% invest · 10% Flex · 60% Vida) ou Gatilho 1 (40/10/50), conforme os gastos.',PROT:'🟠 Proteção: 20% invest · 20% Flex · 60% Vida (25/25/50 com Gatilho 1). Dos investimentos, 50% ETFs e 50% colchão.',EMER:'🔴 Emergência: investimentos viram liquidez, 40% Reserva Flex ou Selic e 60% Reserva Obrigatória travada por 1 mês.'};
+ $('prh').innerHTML=`<div class='row'><span>💳 Teto da fatura (${t}%)</span><b>${f(tv)}</b></div><div class='row'><span>🟡 Gatilho 1 a partir de</span><b>${f(g1v)}</b></div><div class='note'>${rd[rg]||''}</div>`;
+ $('cpr').innerHTML=h}}
+document.addEventListener('input',()=>{extra();save()});
+$('lmp').addEventListener('click',async()=>{LS.removeItem('andromeda');await LS.flush();location.reload()});
+const CAT={PRC:'📄 Pendências de Recolhimento Constitucional',IMP:'💰 Imposto Disciplinar',RF:'💼 Utilizações da Reserva Flex',OC:'⚠️ Ocorrências Operacionais',DE:'📜 Decisões Excepcionais',AE:'🛡️ Autorizações Extraordinárias',RG:'🔄 Regularizações',ARO:'🔒 Aportes da Reserva Obrigatória',AT:'🧾 Ata da Revisão Trimestral',RM:'🗓️ Reunião mensal'};
+const AR=[['1º'],['2º'],['3º'],['4º'],['5º','Proteção'],['6º','Emergência'],['7º','Cartão'],['8º','Reserva Flex'],['9º'],['10º'],['10º-A','Investimentos'],['10º-B'],['10º-C'],['11º','Imposto Disciplinar'],['12º'],['13º','TFP e Leitura Trimestral'],['14º'],['15º'],['15º-A'],['16º'],['17º'],['18º'],['18º-A'],['18º-B']];
+$('lvart').innerHTML=AR.map(a=>`<label class="ch"><input type="checkbox" value="Art. ${a[0]}"> ${a[0]}${a[1]?' · '+a[1]:''}</label>`).join('');
+function fdv(){const a=[...document.querySelectorAll('#lvart input:checked')].map(x=>x.value).join(', '),c=$('lvf').value.trim();return a&&c?a+' — '+c:a||c}
+$('lvc').addEventListener('input',()=>{$('lvv').style.display=$('lvc').value=='ARO'?'block':'none'});
+const SIT=['⏳ Pendente','🔄 Em andamento','✅ Regularizado'];
+let LV=[];
+$('lvc').innerHTML=Object.keys(CAT).map(k=>`<option value="${k}">${CAT[k]} (${k})</option>`).join('');
+$('lvs').innerHTML=SIT.map((s,k)=>`<option value="${k}">${s}</option>`).join('');
+{const t=new Date();t.setMinutes(t.getMinutes()-t.getTimezoneOffset());$('lvd').value=t.toISOString().slice(0,10)}
+function lvSave(){try{LS.setItem('andromeda_livro',JSON.stringify(LV))}catch(e){}}
+let LVF='all',LVI=[];try{LVI=JSON.parse(LS.getItem('andromeda_lvign')||'[]')}catch(e){}
+const SUG={PRC:['Art. 3º','Art. 4º'],IMP:['Art. 11º'],RF:['Art. 8º'],OC:[],DE:['Art. 16º'],AE:['Art. 16º'],RG:[],ARO:['Art. 6º'],AT:['Art. 14º','Art. 15º'],RM:['Art. 15º-A']};
+const TPL={PRC:'Recolhimento pendente de R$ __ referente ao mês __',IMP:'Imposto do trimestre: aplicado R$ __ de R$ __',RF:'Retirada de R$ __ da Reserva Flex (__% do saldo) para __',OC:'Ocorrência: descreva o que aconteceu',DE:'Decisão excepcional: __ (período de teste até __)',AE:'Autorização extraordinária: __',RG:'Regularização do registro __',ARO:'Aporte de R$ __ na Reserva Obrigatória',AT:'Ata da revisão do trimestre __',RM:'Reunião mensal de __ (ata)'};
+const ARTN={'1º':'Princípios','2º':'Poderes','3º':'Execução da receita','4º':'Regime ordinário','5º':'Regime de Proteção','6º':'Estado de Emergência','7º':'Cartão de crédito','8º':'Reserva Flex','9º':'Recomposição da Flex','10º':'Investimentos','10º-A':'Alocação','10º-B':'Reinvestimento','10º-C':'Alocação em regimes especiais','11º':'Imposto Disciplinar','12º':'TFP','13º':'TFP e Leitura trimestral','14º':'Revisão financeira','15º':'Revisão financeira','15º-A':'Consulta ao Mobills','16º':'Livro de Pendências','17º':'Guardião','18º':'Leitura trimestral','18º-A':'PIB Financeiro','18º-B':'Projeção trimestral'};
+const artList=fd=>String(fd||'').match(/Art\. ?\d+º(?:-[A-Z])?/g)||[];
+const artBadge=a=>{const m=String(a).match(/(\d+º(?:-[A-Z])?)/),nm=m&&ARTN[m[1]]?' · '+ARTN[m[1]]:'';return `<span style='display:inline-block;padding:2px 9px;border-radius:99px;border:1px solid var(--bd);background:var(--bg);font-size:12px;margin:2px 4px 2px 0'>📖 ${String(a).trim()}${nm}</span>`};
+function lvTiles(){$('lvtl').innerHTML=Object.keys(CAT).map(k=>{const cl=CAT[k],sp=cl.indexOf(' ');return `<button class='sg${$('lvc').value==k?' on':''}' data-t='${k}' style='text-align:left'>${cl.slice(0,sp)} ${cl.slice(sp+1)}<small>${(SUG[k]||[]).join(' · ')||'sem artigo fixo'}</small></button>`}).join('');$('lvx').placeholder=TPL[$('lvc').value]||''}
+function lvAB(){const c=[...document.querySelectorAll('#lvart input:checked')].map(x=>x.value);$('lvab').innerHTML=c.length?c.map(artBadge).join(''):'<span class="note">Nenhum artigo marcado.</span>'}
+$('lvc').addEventListener('input',()=>{const s=SUG[$('lvc').value]||[];document.querySelectorAll('#lvart input').forEach(c=>c.checked=s.includes(c.value));lvTiles();lvAB()});
+$('lvtl').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;$('lvc').value=b.dataset.t;$('lvc').dispatchEvent(new Event('input'))});
+document.addEventListener('change',e=>{if(e.target.closest&&e.target.closest('#lvart'))lvAB()});
+$('lvjq').innerHTML=['Despesa essencial','Imprevisto','Regra do regime','Aplicação do Imposto','Teste da regra'].map(x=>`<button class="ch" data-j="${x}" style="background:var(--bg)">${x}</button>`).join('');
+$('lvjq').addEventListener('click',e=>{const b=e.target.closest('[data-j]');if(!b)return;const j=$('lvj');j.value=(j.value?j.value+'; ':'')+b.dataset.j});
+function lvTxt(r){return '🧾 Identificação: '+r.id+'\n📅 Data: '+r.dt+'\n📂 Categoria: '+CAT[r.sg]+'\n📖 Fundamentação Constitucional: '+(artList(r.fd).map(a=>{const m=a.match(/(\d+º(?:-[A-Z])?)/);return a+(ARTN[m[1]]?' ('+ARTN[m[1]]+')':'')}).join(', ')||r.fd||'—')+(r.fd&&r.fd.includes(' — ')?' — '+r.fd.split(' — ')[1]:'')+'\n📝 Descrição: '+r.ds+(r.vl?'\n💰 Valor do aporte: '+f(r.vl):'')+'\n💬 Justificativa: '+(r.js||'—')+'\n📌 Situação Atual: '+SIT[r.st]}
+function lvAddObj(s){const n=LV.filter(r=>r.sg==s.sg).reduce((m,r)=>Math.max(m,+String(r.id).split('-')[1]||0),0)+1;LV.push({sg:s.sg,id:s.sg+'-'+String(n).padStart(3,'0'),dt:s.dt||new Date().toLocaleDateString('pt-BR'),ds:s.ds,fd:s.fd,vl:s.vl||0,js:s.js||'',st:s.st,k:s.k,rec:s.rec});lvSave();lvRender();try{avulsas()}catch(e){}}
+function lvDetect(){const S=[],num=id=>+$(id).value||0,per=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),tv=num('clt')*num('teto')/100;
+ [0,1,2].forEach(k=>{const fa=num('fa'+k);if(tv>0&&fa>tv)S.push({k:'card|'+per+'|'+k,sg:'OC',ds:'Fatura de '+ML(k)+' de '+f(fa)+' acima do teto de '+f(tv)+' (excedeu '+f(fa-tv)+')',js:'Teto do cartão não respeitado no mês.',fd:'Art. 7º',st:0})});
+ [0,1,2].forEach(k=>{if(RG[k]=='PROT'||RG[k]=='EMER')S.push({k:'reg|'+per+'|'+k+'|'+RG[k],sg:'OC',ds:ML(k)+' em '+nomes[RG[k]],js:'Regime ativado pela apuração mensal do fluxo de caixa.',fd:RG[k]=='EMER'?'Art. 6º':'Art. 5º',st:0})});
+ (RO||[]).forEach(r=>S.push({k:'ro|'+r.d+'|'+r.v,sg:'ARO',ds:'Aporte de '+f(r.v)+' na Reserva Obrigatória em '+fmtd(r.d),vl:r.v,js:'Investimento redirecionado à liquidez durante o Estado de Emergência.',fd:'Art. 6º',st:1}));
+ const s=num('fxs'),r=num('fxr');if(s>0&&r>s*.5&&r<=s)S.push({k:'flex|'+per+'|'+r,sg:'RF',ds:'Retirada de '+f(r)+' da Reserva Flex ('+p(r/s*100)+' do saldo de '+f(s)+')',js:($('fxm').value||'').trim(),fd:'Art. 8º',st:0});
+ const im=(window.RT||0)*IMP/100,a1=$('ltp1').value,a2=$('ltp2').value,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((t,x)=>t+x.q*x.p,0);
+ {const sg=impSug();if(sg)S.push(sg);const pg=impPago();if(pg>ap+.005)S.push({k:'imp|'+per,sg:'IMP',ds:'Do Imposto Disciplinar pago ('+f(pg)+'), '+f(ap)+' foram aplicados em ETFs; saldo de '+f(pg-ap)+' a aplicar ou acumular',js:'Sem valor para uma cota, o saldo acumula para o trimestre seguinte (Art. 11º).',fd:'Art. 11º',st:0})}
+ const mg=($('pjo')?$('pjo').innerText:'').match(/Alerta: o orçamento fica negativo em [^\n]*/);if(mg)S.push({k:'proj|'+per,sg:'OC',ds:'Projeção financeira: '+mg[0].replace('Alerta: ',''),js:'Alerta informativo do Art. 18º-B.',fd:'Art. 18º-B',st:0});
+ if(window.FORC)S.push({k:'18|'+per+'|'+window.FORC,sg:'OC',ds:'Trimestre classificado: regime '+nomes[window.PROX]+' obrigatório no 1º mês seguinte',js:'A classificação do trimestre define o regime do mês seguinte, independentemente da apuração mensal.',fd:'Art. 18º',st:0});
+ const nex=LV.filter(r=>(r.sg=='DE'||r.sg=='AE')&&isoOf(r)>=a1&&isoOf(r)<=a2).length;if(nex>2)S.push({k:'exc|'+per,sg:'OC',ds:'Limite de 2 decisões excepcionais excedido ('+nex+' no trimestre)',js:'',fd:'Art. 16º',st:0});
+ if(window.CKDONE&&$('ata')&&$('ata').value)S.push({k:'at|'+per,sg:'AT',ds:$('ata').value,js:'Revisão trimestral concluída com o checklist completo.',fd:'Art. 14º; Art. 15º',st:2});
+ if(window.AVREC)S.push(window.AVREC);
+ return S.filter(x=>!LV.some(r=>r.k==x.k)&&!LVI.includes(x.k))}
+function lvSug(){try{const S=lvDetect();window.LVS=S;const sm=[...document.querySelectorAll('details.sec>summary')].find(x=>x.textContent.includes('Livro de pendências'));if(sm)sm.textContent='📑 Livro de pendências e dados'+(S.length?' · '+S.length+' para registrar':'');const nb=document.querySelector('#nvb [data-n="Livro de pendências"] small');if(nb)nb.textContent=S.length?'Livro ('+S.length+')':'Livro';
+ $('lvsg').innerHTML=S.length?`<div style='margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:8px'><b>🔎 O app encontrou ${S.length} ponto(s) para registrar</b>${S.length>1?`<button class='ib' data-sg='all'>✅ Registrar todos</button>`:''}</div><div class='note' style='margin:2px 0 4px'>Confirme para registrar, edite antes ou ignore.</div>`+S.map((s,i)=>{const cl=CAT[s.sg],sp=cl.indexOf(' ');return `<div style='border:2px dashed var(--ac);border-radius:12px;padding:10px 12px;margin-top:8px'><div class='row' style='border:0;padding:0'><b>${cl.slice(0,sp)} ${cl.slice(sp+1)}</b><span style='font-size:12px'>${SIT[s.st]}</span></div><div style='margin:4px 0'>${artList(s.fd).map(artBadge).join('')}</div><div style='white-space:pre-line;max-height:130px;overflow:auto'>${s.ds}</div>${s.js?`<div class='note' style='margin:4px 0 0'>💬 ${s.js}</div>`:''}<div style='display:flex;gap:6px;flex-wrap:wrap;margin-top:8px'><button class='bt pr' style='margin:0' data-sg='ok' data-i='${i}'>✅ Registrar</button><button class='ib' data-sg='ed' data-i='${i}'>✏️ Editar</button><button class='ib' data-sg='ig' data-i='${i}'>✕ Ignorar</button></div></div>`}).join(''):`<div class='note' style='margin-top:10px'>🔎 Nenhuma pendência nova detectada pelo app. ✅</div>`}catch(e){}}
+$('lvsg').addEventListener('click',e=>{const b=e.target.closest('[data-sg]');if(!b)return;if(b.dataset.sg=='all'){(window.LVS||[]).slice().forEach(x=>lvAddObj(x));return}const s=(window.LVS||[])[+b.dataset.i];if(!s)return;
+ if(b.dataset.sg=='ok')lvAddObj(s);
+ else if(b.dataset.sg=='ig'){LVI.push(s.k);try{LS.setItem('andromeda_lvign',JSON.stringify(LVI))}catch(x){}lvSug()}
+ else{$('lvc').value=s.sg;$('lvc').dispatchEvent(new Event('input'));$('lvx').value=s.ds;$('lvj').value=s.js||'';$('lvvl').value=s.vl||'';$('lvs').value=s.st;const set=artList(s.fd);document.querySelectorAll('#lvart input').forEach(c=>c.checked=set.includes(c.value));lvAB();window.LVEK=s.k;const d=$('lvnw');d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}});
+function lvRender(){lvQ();ckRender();lvTiles();lvAB();lvSug();
+ const ct=[0,1,2].map(k=>LV.filter(r=>r.st==k).length);
+ $('lvsm').innerHTML=`<div style='display:flex;gap:8px'>${[0,1,2].map(k=>`<div style='flex:1;text-align:center;border:1px solid var(--bd);border-radius:10px;padding:8px 4px'><div style='font-size:20px;font-weight:700'>${ct[k]}</div><div style='font-size:12px;color:var(--mu)'>${SIT[k]}</div></div>`).join('')}</div>`;
+ $('lvfl').innerHTML=[['all','Todos'],['0','⏳ Pendentes'],['1','🔄 Em andamento'],['2','✅ Regularizados']].map(x=>`<button class='lvfb' data-f='${x[0]}' style='padding:6px 11px;border-radius:99px;border:1px solid var(--bd);background:${LVF==x[0]?'var(--ac)':'var(--bg)'};color:${LVF==x[0]?'var(--bg)':'var(--tx)'};font-size:13px'>${x[1]}</button>`).join('');
+ const L=LV.map((r,i)=>[r,i]).filter(x=>LVF=='all'||x[0].st==+LVF).reverse();
+ $('lvl').innerHTML=L.length?L.map(x=>{const r=x[0],i=x[1],cl=CAT[r.sg],sp=cl.indexOf(' ');return `<div style='border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-top:8px'><div class='row' style='border:0;padding:0'><b>${cl.slice(0,sp)} ${r.id}</b><span style='font-size:12px;color:var(--mu)'>${r.dt}</span></div><div style='font-size:13px;color:var(--mu)'>${cl.slice(sp+1)}</div><div style='margin:4px 0'>${artList(r.fd).map(artBadge).join('')}</div><div style='margin:4px 0 6px;white-space:pre-line'>${r.ds}</div>${r.rec?(()=>{const P=(r.rec.pg||[]).reduce((s,y)=>s+y[1],0),res=Math.max(0,r.rec.falt-P),pc=r.rec.falt>0?P/r.rec.falt*100:100;return `<div style='margin:6px 0'><div style='height:10px;border-radius:6px;background:var(--bd);overflow:hidden'><div style='height:100%;width:${Math.min(100,pc)}%;background:var(--ok)'></div></div><div class='row' style='border:0;padding:4px 0'><span>💸 Pago aos poucos</span><b class='${res<=.005?'ok':'wa'}'>${f(P)} · resta ${f(res)} (${p(r.rec.base>0?res/r.rec.base*100:0)})</b></div>`+(res>.005?`<div style='display:flex;gap:6px'><input class='rpv' data-rp='${i}' type='number' inputmode='decimal' placeholder='R$ pago agora' style='flex:1'><button class='ib rpb' data-rp='${i}'>➕ Pagar</button></div>`:'')+'</div>'})():''}${r.vl?`<div style='font-size:13px'>💰 ${f(r.vl)}</div>`:''}${r.js?`<div class='note' style='margin:2px 0 4px'>💬 ${r.js}</div>`:''}<div style='display:flex;gap:6px;align-items:center;margin-top:8px'><select class='ls' data-i='${i}' style='flex:1;padding:6px'>${SIT.map((s,k)=>`<option value='${k}'${k==r.st?' selected':''}>${s}</option>`).join('')}</select><button class='lc ib' data-c='${i}'>📋</button><button class='ld ib' data-d='${i}'>✕</button></div></div>`}).join(''):'<div class="note" style="margin-top:8px">Nenhum registro por aqui.</div>';
+ $('lvt').value=LV.length?'📑 Livro de Pendências Constitucionais\n\n'+LV.map(lvTxt).join('\n\n⸻\n\n'):''}
+$('lvfl').addEventListener('click',e=>{const b=e.target.closest('.lvfb');if(b){LVF=b.dataset.f;lvRender()}});
+$('lvl').addEventListener('click',async e=>{const b=e.target.closest('.lc');if(!b)return;const t=lvTxt(LV[+b.dataset.c]);try{await navigator.clipboard.writeText(t);b.textContent='✅'}catch(x){b.textContent='⚠️'}setTimeout(()=>{b.textContent='📋'},1500)});
+$('lva').addEventListener('click',()=>{
+ const ds=$('lvx').value.trim();if(!ds){$('lvm').textContent='Preencha a descrição.';return}
+ $('lvm').textContent='';
+ const sg=$('lvc').value,n=Math.max(0,...LV.filter(r=>r.sg==sg).map(r=>+r.id.split('-')[1]))+1,[y,m,d]=$('lvd').value.split('-');
+ LV.push({sg,id:sg+'-'+String(n).padStart(3,'0'),dt:y?d+'/'+m+'/'+y:new Date().toLocaleDateString('pt-BR'),ds,fd:fdv(),vl:sg=='ARO'?(+$('lvvl').value||0):0,js:$('lvj').value.trim(),st:+$('lvs').value,k:window.LVEK||undefined});window.LVEK=null;
+ $('lvx').value='';$('lvf').value='';$('lvj').value='';$('lvvl').value='';document.querySelectorAll('#lvart input').forEach(c=>c.checked=false);lvSave();lvRender();$('lvm').textContent='✅ Registro adicionado';$('lvc').dispatchEvent(new Event('input'))});
+$('lvl').addEventListener('click',e=>{const b=e.target.closest('.ld');if(b){LV.splice(+b.dataset.d,1);lvSave();lvRender()}});
+$('lvl').addEventListener('change',e=>{if(e.target.classList.contains('ls')){LV[+e.target.dataset.i].st=+e.target.value;lvSave();lvRender()}});
+$('lvp').addEventListener('click',async()=>{const t=$('lvt').value;if(!t)return;try{await navigator.clipboard.writeText(t);$('lvk').textContent='Copiado!'}catch(e){$('lvt').select();try{document.execCommand('copy');$('lvk').textContent='Copiado!'}catch(e2){$('lvk').textContent='Segure no texto e copie.'}}});
+$('lvz').addEventListener('click',()=>{const b=$('lvz');if(b.dataset.a){LV=[];lvSave();lvRender();delete b.dataset.a;b.textContent='🗑️ Zerar livro';$('lvk').textContent=''}else{b.dataset.a=1;b.textContent='Toque de novo para confirmar';setTimeout(()=>{delete b.dataset.a;b.textContent='🗑️ Zerar livro'},3000)}});
+try{LV=JSON.parse(LS.getItem('andromeda_livro')||'[]')}catch(e){LV=[]}
+lvRender();
+function isoOf(r){return r.dt.split('/').reverse().join('-')}
+function lvQ(){const a=$('ltp1').value,b=$('ltp2').value,n=LV.filter(r=>(r.sg=='DE'||r.sg=='AE')&&isoOf(r)>=a&&isoOf(r)<=b).length;$('lvq').innerHTML=`<div class="row"><span>⚖️ Decisões/Autorizações excepcionais no trimestre</span><b class="${n>2?'er':n==2?'wa':'ok'}">${n} de 2${n>2?' — limite excedido':n==2?' — limite atingido':''}</b></div>`}
+let LT=[];
+function fmtd(s){return s.split('-').reverse().join('/')}
+function ltDias(s){const m=String(s).match(/(\d+)\/(\d+)\/(\d+) a (\d+)\/(\d+)\/(\d+)/);if(!m)return 90;const d=Math.round((new Date(+m[6],m[5]-1,+m[4])-new Date(+m[3],m[2]-1,+m[1]))/864e5)+1;return d>0?d:90}
+function ltPib(r){return r.pib||(r.r/ltDias(r.p)*90)}
+function pibVar(a,b){return b>0?(a/b-1)*100:null}
+function ltSave(){try{LS.setItem('andromeda_trim',JSON.stringify(LT))}catch(e){}}
+function ltRender(){chRender();ckRender();
+ $('ltl').innerHTML=LT.length?LT.map((r,i)=>`<div class="row"><span>${r.p}</span><button class="lx" data-d="${i}" style="padding:4px 9px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)">✕</button></div>`).join(''):'<div class="note">Nenhum trimestre fechado ainda.</div>';
+ $('ltt').value=LT.length?'📚 Livro Trimestral\n\n'+LT.map((r,i)=>'📜 Constituição vigente: '+r.c+'\n📅 Período: '+r.p+'\n💰 Receita: '+f(r.r)+'\n💸 Despesa: '+f(r.d)+'\n📊 Fluxo de caixa: '+f(r.r-r.d)+' ('+p(r.r>0?(r.r-r.d)/r.r*100:0)+')\n🧮 PIB Financeiro: '+f(ltPib(r))+(i>0&&pibVar(ltPib(r),ltPib(LT[i-1]))!==null?' ('+p(pibVar(ltPib(r),ltPib(LT[i-1])))+' vs trimestre anterior: '+(ltPib(r)>=ltPib(LT[i-1])?'produzi mais':'produzi menos')+')':'')).join('\n\n⸻\n\n'):''}
+$('lta').addEventListener('click',()=>{
+ if(!$('ltp1').value||!$('ltp2').value){$('ltm').textContent='Preencha as datas.';return}
+ $('ltm').textContent='';
+ const R=+$('ltr').value||[0,1,2].reduce((a,i)=>a+(+$('rc'+i).value||0),0),D=+$('ltd').value||[0,1,2].reduce((a,i)=>a+(+$('ds'+i).value||0),0);$('ltr').value='';$('ltd').value='';
+ LT.push({c:$('ltc').value.trim()||'Andrômeda',p:fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),r:R,d:D});ltSave();ltRender()});
+$('ltl').addEventListener('click',e=>{const b=e.target.closest('.lx');if(b){LT.splice(+b.dataset.d,1);ltSave();ltRender()}});
+$('ltp').addEventListener('click',async()=>{const t=$('ltt').value;if(!t)return;try{await navigator.clipboard.writeText(t);$('ltk').textContent='Copiado!'}catch(e){$('ltt').select();try{document.execCommand('copy');$('ltk').textContent='Copiado!'}catch(e2){$('ltk').textContent='Segure no texto e copie.'}}});
+document.addEventListener('input',e=>{if(e.target.id=='ltp1'||e.target.id=='ltp2')lvRender()});
+try{LT=JSON.parse(LS.getItem('andromeda_trim')||'[]')}catch(e){LT=[]}
+try{if(!LS.getItem('andromeda_seed')){if(!LT.length){LT=[{c:'Constituição I/II',p:'15/11/2025 a 12/02/2026',r:15187.42,d:10068.86},{c:'Constituição II',p:'12/02/2026 a 30/04/2026',r:9252.23,d:7304.37},{c:'Reforma Liquidez/Domínio',p:'01/05/2026 a 31/07/2026',r:9697.49,d:11350.02}];ltSave()}LS.setItem('andromeda_seed','1')}}catch(e){}
+var CK=null,RO=null;
+function ckRender(){try{
+ if(!CK)return;
+ document.querySelectorAll('#ckl input[data-k]').forEach(c=>CK[c.dataset.k]=c.checked);
+ const js=JSON.stringify(CK);if(js!==window.__ckjs){window.__ckjs=js;try{LS.setItem('andromeda_ck',js)}catch(e){}}
+ const num=id=>+$(id).value||0,tv=num('clt')*num('teto')/100,a1=$('ltp1').value,a2=$('ltp2').value,per=fmtd(a1)+' a '+fmtd(a2);
+ const rv=(el,l)=>{if(!el)return '—';const r=[...el.querySelectorAll('.row')].find(x=>x.textContent.includes(l));return r&&r.lastElementChild?r.lastElementChild.textContent.trim().replace(/\s+/g,' ')||'—':'—'};
+ const mesesOk=[0,1,2].filter(k=>num('rc'+k)>0&&num('ds'+k)>0).length,ab=[0,1,2].filter(k=>num('fa'+k)>tv).map(k=>k+1);
+ const n=LV.filter(r=>(r.sg=='DE'||r.sg=='AE')&&isoOf(r)>=a1&&isoOf(r)<=a2).length,pend=LV.filter(r=>r.st==0).length;
+ const po=$('pjo')?$('pjo').innerText:'',neg=/Alerta: o orçamento fica negativo/.test(po);
+ const im=(window.RT||0)*IMP/100,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0),lic=(($('ckli')||{}).value||'').trim(),ct=window.COLTOT||0;
+ const G=[
+ ['📥 Dados do trimestre',[
+  ['📝 Receita e despesa dos 3 meses',mesesOk==3,mesesOk+' de 3 meses preenchidos','Preencha receita e despesa nos cards dos 3 meses.','#meses'],
+  ['💧 Colchão e Reserva Flex informados',ct>0&&num('fxs')>0,(ct>0?'colchão informado':'falta o colchão')+' · '+(num('fxs')>0?'Flex informada':'falta a Flex'),'Informe os saldos nos cards do colchão e da Reserva Flex.','#cho']]],
+ ['🧮 Apuração',[
+  ['🌡️ TFP e classificação calculados (Arts. 13º e 18º)',mesesOk>0,rv($('tri'),'TFP'),'Preencha os meses para o app calcular o TFP.','#tri'],
+  ['💳 Faturas dentro do teto (Art. 7º)',!ab.length&&mesesOk>0,ab.length?'acima do teto no mês '+ab.join(', '):'teto de '+f(tv),'Reduza a fatura do mês indicado ou mantenha o teto vigente.','#cpr'],
+  ['🔭 Projeção sem orçamento negativo',!neg,neg?'há mês negativo':'média '+rv($('pjo'),'Média do trimestre').replace(/^\S+\s/,''),'Ajuste obrigações ou renda no card da Projeção.','#pjo']]],
+ ['📈 Investimentos',[
+  ['💰 Imposto Disciplinar pago (Art. 11º)',im>0&&impPago()>=im-.005,im>0?f(impPago())+' de '+f(im):'sem imposto calculado','Registre os pagamentos no card do Imposto Disciplinar, aos poucos.','#impo'],
+  ['📈 Imposto Disciplinar aplicado em ETFs (Art. 11º)',im>0&&ap>=im,im>0?f(ap)+' de '+f(im):'sem imposto calculado','Compre cotas de ACWI11, DIVO11 ou NASD11, ou acumule para o próximo trimestre.','#cbc']]],
+ ['📑 Registros',[
+  ['📚 Livro Trimestral fechado (Art. 18º)',LT.some(r=>r.p==per),LT.some(r=>r.p==per)?'fechado':'ainda aberto','Feche o trimestre no card do Livro Trimestral.','#lta'],
+  ['📑 Livro de Pendências sem itens pendentes',!pend,pend?pend+' pendente(s)':'nenhuma pendência','Regularize ou atualize a situação dos registros pendentes.','#lvl'],
+  ['⚖️ No máximo 2 decisões excepcionais (Art. 16º)',n<=2,n+' de 2 no trimestre','Reavalie decisões excepcionais: o limite é 2 por trimestre.','#lvl'],
+  ['🧠 Principal lição do trimestre escrita (Art. 14º)',lic.length>2,lic?'escrita':'falta escrever','Escreva a lição no card da Ata da Revisão, logo abaixo.','#ckli']]]];
+ const MN=[['mob','📱 Dados do Mobills conferidos (Art. 15º)']];
+ const all=G.flatMap(g=>g[1]),tot=all.length+MN.length,dn=all.filter(a=>a[1]).length+MN.filter(x=>CK[x[0]]).length;
+ const nxt=all.find(a=>!a[1]),mpend=MN.find(x=>!CK[x[0]]);window.CKDONE=(dn==tot);
+ const bx='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:10px';
+ let h=`<div class='row' style='border-top:0'><span>Progresso</span><b class='${dn==tot?'ok':'wa'}'>${dn} de ${tot}</b></div><div style='height:12px;border-radius:7px;background:var(--bd);overflow:hidden;margin:4px 0 4px'><div style='height:100%;width:${dn/tot*100}%;background:var(--ok)'></div></div>`;
+ h+=nxt?`<div style='border:2px solid var(--ac);border-radius:14px;padding:10px 12px;margin-top:10px'><div style='font-size:12px;color:var(--mu)'>🎯 Próxima ação</div><div style='font-weight:700'>${nxt[0]}</div><div class='note' style='margin:4px 0 8px'>${nxt[3]}</div><button class='ib go' data-go='${nxt[4]}'>Ir para o card ➜</button></div>`:(mpend?`<div style='border:2px solid var(--ac);border-radius:14px;padding:10px 12px;margin-top:10px'><div style='font-size:12px;color:var(--mu)'>🎯 Próxima ação</div><div style='font-weight:700'>${mpend[1]}</div><div class='note' style='margin:4px 0 0'>Marque abaixo quando concluir.</div></div>`:`<div style='border:2px solid var(--ok);border-radius:14px;padding:10px 12px;margin-top:10px'><b class='ok'>✅ Revisão pronta para fechar</b><div class='note' style='margin:4px 0 0'>Copie a ata no card abaixo e registre no seu Livro.</div></div>`);
+ h+=G.map(g=>{const ok=g[1].filter(a=>a[1]).length;return `<div style='${bx}'><div style='font-weight:700;padding:6px 0'>${g[0]} <span class='${ok==g[1].length?'ok':'wa'}' style='font-weight:400;font-size:12px'>(${ok}/${g[1].length})</span></div>`+g[1].map(a=>`<div class='row'><span>${a[0]}<br><small style='color:var(--mu)'>${a[2]}</small></span><b class='${a[1]?'ok':'wa'}'>${a[1]?'✅':'⏳'}</b></div>`).join('')+'</div>'}).join('');
+ h+=`<div style='${bx}'><div style='font-weight:700;padding:6px 0'>✍️ Você confirma <span class='${MN.every(x=>CK[x[0]])?'ok':'wa'}' style='font-weight:400;font-size:12px'>(${MN.filter(x=>CK[x[0]]).length}/${MN.length})</span></div>`+MN.map(x=>`<div class='row'><label class='ch' style='margin:0'><input type='checkbox' data-k='${x[0]}'${CK[x[0]]?' checked':''}> ${x[1]}</label></div>`).join('')+'</div>';
+ $('ckl').innerHTML=h}catch(e){}}
+function ataRender(){try{
+ const a1=$('ltp1').value,a2=$('ltp2').value,per=fmtd(a1)+' a '+fmtd(a2),S=window.SIG||[],rv=(el,l)=>{if(!el)return '—';const r=[...el.querySelectorAll('.row')].find(x=>x.textContent.includes(l));return r&&r.lastElementChild?r.lastElementChild.textContent.trim().replace(/\s+/g,' ')||'—':'—'};
+ const li=S.filter(x=>x[0]=='ok').map(x=>'• '+x[1]),bad=S.filter(x=>x[0]=='er'||x[0]=='wa').map(x=>'• '+x[1]),tip=S.filter(x=>x[0]=='in'&&!/^(📝|🔭)/.test(x[1])).map(x=>'• '+x[1]),lic=(($('ckli')||{}).value||'').trim();
+ let R=0,D=0;for(let k=0;k<3;k++){R+=+$('rc'+k).value||0;D+=+$('ds'+k).value||0}const fp=R>0?(R-D)/R*100:0;
+ let pv=null;for(let i=LT.length-1;i>=0;i--){if(LT[i].p!==per){pv=LT[i];break}}
+ const dd=new Date(a2+'T00:00:00');dd.setDate(dd.getDate()+1);
+ let s='🧾 ATA DA REVISÃO TRIMESTRAL\n📅 Período: '+per+'\n🗓️ Gerada em: '+new Date().toLocaleDateString('pt-BR');
+ s+='\n\n1️⃣ Como está a situação financeira?\n• TFP: '+rv($('tri'),'TFP')+' · '+rv($('tri'),'Classificação')+'\n• Fluxo do trimestre: '+f(R-D)+' ('+p(fp)+')\n• Colchão: '+((window.COLTOT||0)>0?f(window.COLTOT)+' de '+f(window.COLMETA||0):'não informado')+'\n• Projeção: média '+rv($('pjo'),'Média do trimestre').replace(/^\S+\s/,'')+' ('+rv($('pjo'),'Faixa do trimestre')+')';
+ s+='\n\n2️⃣ O que funcionou bem?\n'+(li.join('\n')||'—')+'\n\n3️⃣ O que não funcionou?\n'+(bad.join('\n')||'—');
+ s+='\n\n4️⃣ O que deve ser mantido?\n• A ordem Recebeu → Separou → Investiu → Gastou'+(li.length?'\n• Os pontos listados em "O que funcionou bem"':'');
+ s+='\n\n5️⃣ O que precisa ser ajustado?\n'+((bad.concat(tip)).join('\n')||'—');
+ s+='\n\n6️⃣ Qual foi a principal lição do trimestre?\n'+(lic||'(escreva a lição no campo acima)');
+ s+='\n\n7️⃣ O que mudou em relação ao trimestre anterior?\n'+(pv?'• Variação do PIB: '+rv($('tri'),'Variação vs')+'\n• Fluxo: '+p(fp)+' agora contra '+p(pv.r>0?(pv.r-pv.d)/pv.r*100:0)+' no trimestre anterior ('+pv.c+')':'• Ainda não há trimestre anterior fechado para comparar.');
+ s+='\n\n📌 Acompanhamento até a próxima revisão: '+dd.toLocaleDateString('pt-BR');
+ {const L0=LV.filter(r=>r.st==0).length,L1=LV.filter(r=>r.st==1).length,L2=LV.filter(r=>r.st==2).length,dtc=(window.LVS||[]).filter(x=>x.sg!='AT');{const R=reuns().slice(0,3);s+='\n\n🗓️ Reuniões mensais do período: ✅ '+R.filter(r=>r.done).length+' registrada(s) · ❌ '+R.filter(r=>r.past&&!r.done).length+' sem registro'}s+='\n\n📘 Livro de Pendências: ⏳ '+L0+' pendente(s) · 🔄 '+L1+' em andamento · ✅ '+L2+' regularizado(s)';if(dtc.length)s+='\n🔎 Detectado pelo app e ainda sem registro:\n'+dtc.map(x=>'• '+(artList(x.fd)[0]||'')+' — '+String(x.ds).split('\n')[0]).join('\n')}
+ $('ata').value=s}catch(e){}}
+$('ckl').addEventListener('click',e=>{const b=e.target.closest('.go');if(!b)return;const el=document.querySelector(b.dataset.go);if(!el)return;const d=el.closest('details');if(d)d.open=true;el.scrollIntoView({behavior:'smooth',block:'center'})});
+$('ckli').value=LS.getItem('andromeda_licao')||'';$('ckli').addEventListener('input',()=>{LS.setItem('andromeda_licao',$('ckli').value)});
+$('atc').addEventListener('click',async()=>{const t=$('ata').value;if(!t)return;try{await navigator.clipboard.writeText(t);$('atm').textContent='Copiado!'}catch(e){$('ata').select();try{document.execCommand('copy');$('atm').textContent='Copiado!'}catch(e2){$('atm').textContent='Segure no texto e copie.'}}});
+function chRender(){try{
+ const dl=t=>`<div style='font-size:12px;margin-top:2px' class='${t>=0?'ok':'er'}'>${t>=0?'▲ subiu ':'▼ caiu '}${Math.abs(t).toFixed(1).replace('.',',')} pontos vs trimestre anterior</div>`;
+ const d=LT.map(r=>({c:r.c,p:r.p,v:r.r>0?(r.r-r.d)/r.r*100:0})),mx=Math.max(10,...d.map(x=>Math.abs(x.v)));
+ $('chl').innerHTML=d.length?d.map((x,i)=>`<div style='margin-bottom:8px'><div class='row' style='border:0;padding:0'><span style='font-size:12px;color:var(--mu)'>${x.c} · ${x.p}</span><b class='${x.v>=0?'ok':x.v>=-10?'wa':'er'}'>${p(x.v)}</b></div><div style='height:10px;border-radius:6px;background:var(--bd);overflow:hidden'><div style='height:100%;width:${Math.abs(x.v)/mx*100}%;background:var(${x.v>=0?'--ok':x.v>=-10?'--wa':'--er'})'></div></div>${i>0?dl(x.v-d[i-1].v):''}</div>`).join(''):'<div class="note">Feche um trimestre, ou registre os antigos, para ver o gráfico.</div>';
+ if(d.length>1){const t=d[d.length-1].v-d[0].v;$('chn').textContent='📈 Do primeiro ao último trimestre: '+(t>=0?'+':'')+t.toFixed(1).replace('.',',')+' pontos percentuais'}else $('chn').textContent=''}catch(e){}}
+function ymOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function rmRec(ym){return LV.find(r=>r.sg=='RM'&&(r.k=='rm|'+ym||(!r.k&&isoOf(r).slice(0,7)==ym)))}
+function rmDone(d){return !!rmRec(ymOf(d))}
+function reuns(){const s=$('ltp1').value;if(!s)return [];const a=s.split('-').map(Number),td=new Date();td.setHours(0,0,0,0);const out=[];for(let k=0;k<12;k++){const st=new Date(a[0],a[1]-1+k,1),en=new Date(a[0],a[1]+k,0),n=Math.round((en-td)/864e5);out.push({st,d:en,n,past:n<0,done:rmDone(en),started:st<=td,ym:ymOf(st)})}return out}
+function rmRegister(ym){const pr=ym.split('-').map(Number),dd=new Date(pr[0],pr[1]-1,1),ds0=$('ata').value||'';
+ const head='🗓️ ATA DA REUNIÃO MENSAL · '+MN(dd)+' · registrada em '+new Date().toLocaleDateString('pt-BR'),body=ds0?ds0.replace(/^[^\n]*\n?/,''):'(sem dados preenchidos no app nesta reunião)';
+ lvAddObj({sg:'RM',ds:head+'\n'+body,js:'Reunião mensal registrada pela ata (modelo da revisão trimestral).',fd:'Art. 14º; Art. 15º; Art. 15º-A',st:2,k:'rm|'+ym});try{calRender()}catch(e){}}
+function fcAct(){if(window.FCARM&&Date.now()-window.FCARM<5000){window.FCARM=0;$('lta').click();syncAll();return}window.FCARM=Date.now();try{calRender();insRender()}catch(e){}setTimeout(()=>{try{calRender();insRender()}catch(e){}},5100)}
+function actsHtml(){try{const A=[],td=new Date();td.setHours(0,0,0,0);const per=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),e2=$('ltp2').value?new Date($('ltp2').value+'T00:00:00'):null,arm=window.FCARM&&Date.now()-window.FCARM<5000;
+ if(e2&&e2<=td&&!LT.some(r=>r.p==per))A.push(['fech','','📚 O trimestre ('+per+') chegou ao fim: feche e registre na evolução.',arm?'⚠️ Confirmar fechamento':'📚 Fechar trimestre']);
+ reuns().filter(r=>r.started&&!r.done).forEach(r=>A.push(['rm',r.ym,'🗓️ Reunião mensal de '+MN(r.st)+(r.past?' não registrada.':' ainda sem registro.'),'📑 Registrar reunião']));
+ const nd=lvDetect().length;if(nd)A.push(['lv','','📘 '+nd+' ponto(s) detectado(s) para o Livro de Pendências.','✅ Registrar todos']);
+ return A.length?`<div style='border:2px solid var(--ac);border-radius:12px;padding:8px 12px;margin:8px 0'><b>🔔 Pendente de confirmação</b><div class='note' style='margin:2px 0 4px'>O app detectou; você só confirma.</div>`+A.map(a=>`<div style='display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed var(--bd)'><span style='font-size:14px'>${a[2]}</span><button class='ib' data-act='${a[0]}' data-ym='${a[1]}'>${a[3]}</button></div>`).join('')+`</div>`:''}catch(e){return ''}}
+function calRender(){try{
+ const s=$('ltp1').value;if(!s)return;
+ const a=s.split('-').map(Number),y=a[0],m=a[1],d=a[2],td=new Date();td.setHours(0,0,0,0);
+ const fm=x=>x.toLocaleDateString('pt-BR'),df=x=>Math.round((x-td)/864e5),per=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),closed=LT.some(r=>r.p==per),arm=window.FCARM&&Date.now()-window.FCARM<5000;
+ const E=[];for(let k=0;k<4;k++)E.push(['🔚','Fechamento + Imposto Disciplinar → ETFs',new Date(y,m-1+3*k+3,d-1),k==0?'fech':''],['📋','Revisão Trimestral',new Date(y,m-1+3*k+3,d)]);
+ for(let k=0;k<12;k++){const en=new Date(y,m+k,0),st=new Date(y,m-1+k,1);E.push(['🗓️','Reunião mensal · '+MN(st),en,'rm',st])}
+ let an=new Date(td.getFullYear(),10,15);if(an<td)an=new Date(td.getFullYear()+1,10,15);E.push(['🎂','Aniversário da Constituição',an]);
+ E.sort((a2,b2)=>a2[2]-b2[2]);const isRm=e=>e[3]=='rm',nx=E.findIndex(e=>df(e[2])>=0&&!(isRm(e)&&rmDone(e[2]))),od=E.filter(e=>isRm(e)&&df(e[2])<0&&!rmDone(e[2]));
+ let h='';
+ if(od.length)h+=`<div style='border:2px solid var(--er);border-radius:12px;padding:8px 12px;margin-bottom:10px'>⚠️ <b>${od.length} reunião(ões) mensal(is) pendente(s):</b> ${od.map(e=>MN(e[4])).join(', ')}.</div>`;
+ h+=nx>=0?`<div style='text-align:center;border:2px solid var(--ac);border-radius:14px;padding:10px;margin-bottom:10px'><div style='font-size:12px;color:var(--mu)'>⏭️ Próximo evento</div><div style='font-size:28px;font-weight:700'>${df(E[nx][2])==0?'hoje':'em '+df(E[nx][2])+' dias'}</div><div>${E[nx][0]} ${E[nx][1]} · até ${fm(E[nx][2])}</div></div>`:'';
+ h+=E.map((e,i)=>[e,i]).filter(x=>window.CALALL||nx<0||(x[0][2]>=new Date(y,m-1,1)&&x[1]<nx+9)||x[1]==nx||(isRm(x[0])&&df(x[0][2])<0&&!rmDone(x[0][2]))||(x[0][3]=='fech'&&!closed&&df(x[0][2])<=0)).map(x=>{const e=x[0],i=x[1],n=df(e[2]),past=n<0,isn=i==nx,rm=isRm(e),rec=rm?rmRec(ymOf(e[4])):null,done=!!rec,started=rm&&e[4]<=td,fech=e[3]=='fech';
+  let st,btn='';
+  if(rm){st=done?`<b class='ok'>✅ feita em ${rec.dt}</b>`:past?`<b class='er'>❌ pendente (mês encerrado)</b>`:started?`<b class='wa'>⏳ pendente · até ${fm(e[2])}</b>`:`<span style='color:var(--mu)'>🔜 abre em ${Math.round((e[4]-td)/864e5)} dias</span>`;if(started&&!done)btn=`<button class='ib rmb' data-ym='${ymOf(e[4])}'>📑 Registrar</button>`}
+  else if(fech){st=closed?`<b class='ok'>✅ trimestre fechado</b>`:n<=0?`<b class='wa'>⏳ pendente</b>`:`<b class='${n<=15?'wa':'ok'}'>em ${n} dias</b>`;if(!closed&&n<=0)btn=`<button class='ib fcb'>${arm?'⚠️ Confirmar fechamento':'📚 Fechar trimestre'}</button>`}
+  else st=past?`<span style='color:var(--mu)'>já passou</span>`:n==0?`<b class='wa'>hoje</b>`:`<b class='${n<=15?'wa':'ok'}'>em ${n} dias</b>`;
+  return `<div class='row' ${isn?'data-next="1" ':''}style='${past&&!(rm&&!done)&&!(fech&&!closed)?'opacity:.55;':''}${isn?'border:2px solid var(--ac);border-radius:10px;padding:7px 8px;':''}'><span>${e[0]} ${e[1]} (${fm(e[2])})</span><span style='display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end'>${st}${btn}</span></div>`}).join('');
+ h+=`<button class="ib" id="calt" style="margin-top:8px">${window.CALALL?'Mostrar menos':'Ver todos os '+E.length+' eventos'}</button>`;
+ $('cal').innerHTML=h}catch(e){}}
+$('cal').addEventListener('click',e=>{if(e.target.closest('#calt')){window.CALALL=!window.CALALL;calRender();return}
+ const f1=e.target.closest('.fcb');if(f1){fcAct();return}
+ const b=e.target.closest('.rmb');if(b)rmRegister(b.dataset.ym)});
+$('ins').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;if(a=='fech')fcAct();else if(a=='rm')rmRegister(b.dataset.ym);else if(a=='lv')lvDetect().slice().forEach(x=>lvAddObj(x))});
+
+
+function roSave(){try{LS.setItem('andromeda_ro',JSON.stringify(RO))}catch(e){}}
+function roRender(){try{
+ if(!RO)return;
+ const td=new Date();td.setHours(0,0,0,0);let tot=0,tr=0;
+ const bs="padding:6px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)";
+ const rows=RO.map((r,i)=>{const [y,m,d]=r.d.split('-').map(Number),lib=new Date(y,m,d),ds=Math.round((lib-td)/864e5),lk=ds>0,pr=Math.max(0,Math.min(100,100-ds/30*100));tot+=r.v;if(lk)tr+=r.v;
+  return `<div style='border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-top:8px'><div class='row' style='border:0;padding:0'><b>🔒 ${f(r.v)}</b><span style='font-size:12px;color:var(--mu)'>aporte em ${fmtd(r.d)}</span></div><div style='height:10px;border-radius:6px;background:var(--bd);overflow:hidden;margin:8px 0 4px'><div style='height:100%;width:${lk?pr:100}%;background:var(${lk?'--wa':'--ok'})'></div></div><div style='display:flex;justify-content:space-between;align-items:center;gap:6px'><span class='${lk?'wa':'ok'}' style='font-size:13px'>${lk?`⏳ libera em ${ds} dias (${lib.toLocaleDateString('pt-BR')})`:'✅ destravado'}</span><span><button class='rr ib' data-d='${i}'>📋</button> <button class='rx ib' data-d='${i}'>✕</button></span></div></div>`}).join('');
+ const bxs=(l,v,c)=>`<div style='flex:1;text-align:center;border:1px solid var(--bd);border-radius:10px;padding:8px 4px'><div style='font-size:15px;font-weight:700' class='${c}'>${v}</div><div style='font-size:12px;color:var(--mu)'>${l}</div></div>`;
+ $('rol').innerHTML=(RO.length?`<div style='display:flex;gap:8px'>${bxs('Total',f(tot),'')}${bxs('🔒 Travado',f(tr),'wa')}${bxs('✅ Livre',f(tot-tr),'ok')}</div>`:'')+(rows||'<div class="note">Nenhum aporte registrado.</div>')}catch(e){}}
+function roReg(i){const r=RO[i];if(!r)return;const [y,m,d]=r.d.split('-').map(Number),lib=new Date(y,m,d).toLocaleDateString('pt-BR');
+ $('rot').value='🧾 Identificação: ARO-'+String(i+1).padStart(3,'0')+'\n📅 Data: '+fmtd(r.d)+'\n📂 Categoria: 🔒 Aporte à Reserva Obrigatória\n📝 Descrição: Aporte de '+f(r.v)+' na Reserva Obrigatória, travado por 1 mês (libera em '+lib+').\n📖 Fundamentação Constitucional: Art. 6º, §1º e §2º\n💬 Justificativa: Redirecionamento do percentual de investimentos à liquidez durante o Estado de Emergência Financeira.\n📌 Situação Atual: 🔒 Em andamento (travado até '+lib+')';
+ $('rof').style.display='block';$('rocm').textContent=''}
+$('roa').addEventListener('click',()=>{const v=+$('rov').value,d=$('rod').value;if(!(v>0)||!d)return;RO.push({d,v});roSave();$('rov').value='';roRender();roReg(RO.length-1)});
+$('roc').addEventListener('click',async()=>{const t=$('rot').value;if(!t)return;try{await navigator.clipboard.writeText(t);$('rocm').textContent='Copiado!'}catch(e){$('rot').select();try{document.execCommand('copy');$('rocm').textContent='Copiado!'}catch(e2){$('rocm').textContent='Segure no texto e copie.'}}});
+$('rol').addEventListener('click',e=>{const q=e.target.closest('.rr');if(q){roReg(+q.dataset.d);return}const b=e.target.closest('.rx');if(b){RO.splice(+b.dataset.d,1);roSave();roRender()}});
+$('ckz').addEventListener('click',()=>{CK={};$('ckli').value='';LS.removeItem('andromeda_licao');document.querySelectorAll('#ckl input').forEach(c=>c.checked=false);ckRender()});
+{const t=new Date();t.setMinutes(t.getMinutes()-t.getTimezoneOffset());$('rod').value=t.toISOString().slice(0,10)}
+document.addEventListener('input',()=>{ckRender();calRender()});
+try{CK=JSON.parse(LS.getItem('andromeda_ck')||'{}')||{}}catch(e){CK={}}
+try{RO=JSON.parse(LS.getItem('andromeda_ro')||'[]')||[]}catch(e){RO=[]}
+var CP=null;
+function carSave(){try{LS.setItem('andromeda_car',JSON.stringify({cp:CP}))}catch(e){}}
+function carRender(){try{
+ if(!CP)return;
+ const imp=(window.RT||0)*IMP/100,cot=+$('cot').value||0,at=$('cat').value,a1=$('ltp1').value,a2=$('ltp2').value;
+ const ap=CP.filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0);
+ let h=`<div class='row'><span>Imposto do trimestre simulado</span><b>${f(imp)}</b></div>`;
+ if(cot>0){const n=Math.floor(imp/cot);h+=n>0?`<div class='row'><span>Dá para comprar</span><b>${n} cota(s) de ${at} (sobra ${f(imp-n*cot)})</b></div>`:`<div class='row'><span>Valor insuficiente para 1 cota de ${at}</span><b class='wa'>⏳ acumula (faltam ${f(cot-imp)})</b></div>`}
+ h+=`<div class='row'><span>Aplicado neste trimestre</span><b>${f(ap)}</b></div>`;
+ const g={};CP.forEach(r=>{const k=r.e||'ETF';g[k]=g[k]||{q:0,v:0};g[k].q+=r.q;g[k].v+=r.q*r.p});
+ Object.keys(g).forEach(k=>{h+=`<div class='row'><span>${k}: ${g[k].q} cotas · preço médio ${f(g[k].v/g[k].q)}</span><b>${f(g[k].v)}</b></div>`});
+ const bx=`style='padding:4px 9px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx)'`;
+ h+=CP.map((r,i)=>`<div class='row'><span>🛒 ${fmtd(r.d)} · ${r.e||'ETF'} · ${r.q} × ${f(r.p)}</span><span><button class='cr ib' data-i='${i}'>📋</button> <button class='cx ib' data-i='${i}'>✕</button></span></div>`).join('');
+ $('cai').innerHTML=h}catch(e){}}
+function carReg(i){const r=CP[i];if(!r)return;
+ const imp=(window.RT||0)*IMP/100,a1=$('ltp1').value,a2=$('ltp2').value,ap=CP.filter((x,k)=>k<=i&&x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0),mx=Math.max(0,...LV.filter(x=>x.sg=='IMP').map(x=>+x.id.split('-')[1]))+1;
+ $('car').value='🧾 Identificação: IMP-'+String(mx).padStart(3,'0')+'\n📅 Data: '+fmtd(r.d)+'\n📂 Categoria: '+CAT.IMP+'\n📝 Descrição: Compra de '+r.q+' cota(s) de '+(r.e||'ETF')+' a '+f(r.p)+' (total '+f(r.q*r.p)+'). Imposto Disciplinar do trimestre: '+f(imp)+'; aplicado até aqui: '+f(ap)+'; '+(imp>=ap?'saldo a aplicar ou acumular: '+f(imp-ap):'aplicado '+f(ap-imp)+' a mais (complemento com recursos próprios)')+'.\n📖 Fundamentação Constitucional: Art. 11º\n💬 Justificativa: Aplicação do Imposto Disciplinar em cotas de ETF da carteira, conforme o Art. 11º.\n📌 Situação Atual: '+SIT[2];
+ $('carw').style.display='block';$('carm').textContent=''}
+$('carc').addEventListener('click',async()=>{const t=$('car').value;if(!t)return;try{await navigator.clipboard.writeText(t);$('carm').textContent='Copiado!'}catch(e){$('car').select();try{document.execCommand('copy');$('carm').textContent='Copiado!'}catch(e2){$('carm').textContent='Segure no texto e copie.'}}});
+$('cbc').addEventListener('click',()=>{const d=$('cad').value,q=+$('caq').value,pr=+$('cap').value;if(!d||!(q>0)||!(pr>0))return;CP.push({d,e:$('cat').value,q,p:pr});carSave();$('caq').value='';$('cap').value='';carRender();carReg(CP.length-1)});
+$('cai').addEventListener('click',e=>{const r=e.target.closest('.cr');if(r){carReg(+r.dataset.i);return}const b=e.target.closest('.cx');if(!b)return;CP.splice(+b.dataset.i,1);carSave();carRender()});
+{const t=new Date();t.setMinutes(t.getMinutes()-t.getTimezoneOffset());$('cad').value=t.toISOString().slice(0,10)}
+document.addEventListener('input',carRender);
+try{const o=JSON.parse(LS.getItem('andromeda_car')||'{}');CP=o.cp||[]}catch(e){CP=[]}
+const COLK=['chs','chc','chf','chi','chm','cha'];
+function colRender(){try{
+ const num=id=>+$(id).value||0,tot=num('chs')+num('chc')+($('chk').checked?num('chf'):0),meta=num('chm'),ap=num('cha'),fa=Math.max(0,meta-tot),pc=Math.min(100,meta?tot/meta*100:0);
+ window.CHB=tot<meta;window.COLTOT=tot;window.COLMETA=meta;
+ let rt=0;(RO||[]).forEach(r=>rt+=r.v);const sh=num('chs')+num('chc')+num('chf')+rt,lg=num('chi'),all=sh+lg;window.RESCP=sh;window.RESLP=lg;
+ let h=(tot?'':`<div class='note'>Preencha o que você tem em cada ativo; o colchão é só uma medição.</div>`)+`<div class='row'><span>💧 Colchão atual</span><b class='${CHB?'wa':'ok'}'>${f(tot)} de ${f(meta)} (${pc.toFixed(0)}%)</b></div><div style='height:12px;border-radius:7px;background:var(--bd);overflow:hidden;margin:4px 0 6px'><div style='height:100%;width:${pc}%;background:var(${CHB?'--wa':'--ok'})'></div></div>`;
+ if(CHB){h+=`<div class='row'><span>📉 Falta para a meta</span><b>${f(fa)}</b></div>`;if(ap>0)h+=`<div class='row'><span>⏱️ No ritmo de ${f(ap)}/mês</span><b>${Math.ceil(fa/ap)} meses</b></div>`;h+=`<div class='row'><span>📅 Meta em 6 meses</span><b>${f(fa/6)}/mês</b></div><div class='row'><span>📅 Meta em 12 meses</span><b>${f(fa/12)}/mês</b></div><div class='note'>💧 Renda fixa vai primeiro para o colchão (Art. 10º-A, §1º). Na Proteção, 50% dos investimentos vão para o colchão e não há aportes em FIIs (Art. 10º-C).</div>`}
+ else h+=`<div class='note'>✅ Meta atingida: a renda fixa passa a dividir com Tesouro IPCA+ e a Proteção volta à alocação ordinária. Se cair abaixo da meta, a prioridade volta ao colchão.</div>`;
+ if(all>0){const cp2=sh/all*100;h+=`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:12px;font-variant-numeric:tabular-nums'><div style='font-weight:700;padding:6px 0'>⏳ Curto prazo × longo prazo</div><div style='display:flex;gap:2px;height:16px;margin:2px 0 6px'><div style='flex:${sh||0.0001};background:#2a9d8f;border-radius:6px 0 0 6px'></div><div style='flex:${lg||0.0001};background:#6250d6;border-radius:0 6px 6px 0'></div></div><div class='row'><span>💧 Curto prazo</span><b>${f(sh)} · ${Math.round(cp2)}%</b></div><div class='row'><span>🌱 Longo prazo (IPCA+)</span><b>${f(lg)} · ${Math.round(100-cp2)}%</b></div><div class='note'>Curto prazo: Selic, CDB, Reserva Flex e Reserva Obrigatória. O Tesouro IPCA+ é reserva de longo prazo e <b>não entra no colchão</b>.</div></div>`}
+ window.COLTXT=f(tot)+' de '+f(meta)+(CHB?' (abaixo da meta, falta '+f(fa)+')':' (meta atingida)');
+ $('cho').innerHTML=h}catch(e){}}
+function colLoad(){if(!['ACWI11','DIVO11','NASD11'].includes($('cat').value))$('cat').value='ACWI11';try{const o=JSON.parse(LS.getItem('andromeda_ch')||'{}');COLK.forEach(k=>{if(o[k]!==undefined)$(k).value=o[k]});if(o.k)$('chk').checked=true}catch(e){}colRender()}
+document.addEventListener('input',()=>{colRender();calc();try{const o={k:$('chk').checked};COLK.forEach(k=>o[k]=$(k).value);LS.setItem('andromeda_ch',JSON.stringify(o))}catch(e){}});
+document.addEventListener('change',e=>{if(e.target.id=='chk'){colRender();calc()}});
+load();colLoad();extra();ltRender();lvRender();roRender();calRender();
+avulsas();
+calc();
+resumo();carRender();
+
+function pjRender(){try{
+ const clt=+$('clt').value||0,fz=[[50,'Normal','#0f8a60','🟢'],[60,'Monitoramento','#2a78d6','🔵'],[70,'Atenção preventiva','#8a6d00','🟡'],[80,'Restrição financeira','#c4501f','🟠'],[1e9,'Proteção reforçada','#b3382f','🔴']],nv=+$('pjnv').value||0,sel=[0,1,2].map(k=>$('pjm'+k)?$('pjm'+k).checked:true),nn=sel.filter(Boolean).length,lbl=sel.map((x,k)=>x?ML(k):'').filter(Boolean).join(', '),fzf=x=>fz.find(y=>x<=y[0]);
+ let h='',mx=0,sm=0,neg=[],tx='🔭 Projeção Financeira Trimestral (Art. 18º-B)';const M=[];
+ for(let k=0;k<3;k++){const g=id=>$('pj'+k+id).value===''?null:(+$('pj'+k+id).value||0);
+  $('pj'+k+'rn').placeholder=f(clt);$('pj'+k+'fa').placeholder=f(+$('fa'+k).value||0);
+  const rn=g('rn')===null?clt:g('rn'),fa=g('fa')===null?(+$('fa'+k).value||0):g('fa'),pa=[['despesas fixas',g('fx')||0],['parcelas',g('pc')||0],['fatura do cartão',fa],['outras obrigações',g('ou')||0]],ob=pa.reduce((s,x)=>s+x[1],0),pc=rn>0?ob/rn*100:0,fx=fzf(pc),or=rn+(g('ex')||0)-ob-(g('vr')||0),cap=rn*.5-ob,big=pa.reduce((a,b)=>b[1]>a[1]?b:a,pa[0]);
+  const nm=ML(k);mx=Math.max(mx,pc);sm+=pc;if(or<0)neg.push(nm+' ('+f(or)+')');
+  M.push({rn,ob,pc,or,cap,fx,big,np:(nv>0&&sel[k]&&rn>0)?(ob+nv)/rn*100:pc});
+  tx+='\n\n'+nm+': comprometimento '+p(pc)+' ('+fx[1]+')\n• Renda CLT: '+f(rn)+'\n• Despesas fixas: '+f(g('fx')||0)+'\n• Parcelas: '+f(g('pc')||0)+'\n• Fatura do cartão: '+f(fa)+'\n• Outras obrigações: '+f(g('ou')||0)+'\n• Total de obrigações: '+f(ob)+(g('ex')?'\n• Receita extra: '+f(g('ex')):'')+(g('vr')?'\n• Gastos variáveis: '+f(g('vr')):'')+'\n• Orçamento do mês: '+f(or)+(or<0?' (negativo)':'')+'\n• '+(cap>=0?'Margem até 50% (Normal): '+f(cap):'Para voltar à faixa Normal: reduzir '+f(-cap))}
+ const av=sm/3,fm=fzf(av),fx2=fzf(mx),worst=M.reduce((a,m,i)=>m.pc>M[a].pc?i:a,0),tots=M.map(m=>m.np),top=Math.max(100,...tots),av2=tots.reduce((s,x)=>s+x,0)/3,fm2=fzf(av2),w2=Math.max(...tots),wf2=fzf(w2);
+ h+=`<div style='border:2px solid var(--ac);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px'>🧠 <b>Leitura do app:</b> o comprometimento médio é <b>${p(av)}</b> (${fm[1]}). O mês mais pesado é <b>${ML(worst)}</b> (${p(M[worst].pc)}), puxado por ${M[worst].big[0]}. ${neg.length?'<b class="er">🚨 O orçamento fica negativo em '+neg.join(', ')+'.</b>':'O pior orçamento do trimestre sobra <b class="ok">'+f(Math.min(...M.map(m=>m.or)))+'</b>.'}${nv>0?'<br>🛒 Com a parcela de <b>'+f(nv)+'</b>, o pior mês vai para <b>'+p(w2)+'</b> ('+wf2[1]+').':''}</div>`;
+ h+=`<div style='border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-top:10px'><div style='font-weight:700;margin-bottom:6px'>📊 Comprometimento por mês${nv>0?' · com a nova parcela':''}</div><div style='position:relative;display:flex;align-items:flex-end;gap:12px;height:120px;padding-top:6px'><div style='position:absolute;left:0;right:0;bottom:${50/top*100}%;border-top:2px dashed var(--mu)'></div><span style='position:absolute;left:0;bottom:calc(${50/top*100}% + 2px);font-size:11px;color:var(--mu);background:var(--card);padding:0 3px;z-index:1'>50% · Normal</span>${M.map((m,k)=>{const ex=m.np-m.pc,tot=m.np,nf=fzf(tot);return `<div style='flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%'><div style='font-size:12px;font-weight:700'>${p(tot)}</div>${ex>0?`<div style='font-size:10px;color:${nf[2]}'>+${p(ex)}</div>`:''}<div style='width:100%;max-width:70px;display:flex;flex-direction:column;justify-content:flex-end;height:${Math.min(100,tot/top*100)}%'>${ex>0?`<div style='height:${ex/tot*100}%;background:repeating-linear-gradient(45deg,${nf[2]} 0 5px,transparent 5px 10px);border:2px dashed ${nf[2]};border-bottom:0;border-radius:6px 6px 0 0'></div>`:''}<div style='height:${ex>0?m.pc/tot*100:100}%;background:${m.fx[2]};border-radius:${ex>0?'0':'6px 6px 0 0'}'></div></div><div style='font-size:12px;color:var(--mu);margin-top:3px'>${ML(k)}</div></div>`}).join('')}</div>${nv>0?`<div class='note' style='margin:8px 0 0'>▮ atual · ▨ nova parcela de ${f(nv)} em ${lbl||'nenhum mês'}</div>`:''}</div>`;
+ M.forEach((m,k)=>{h+=`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:10px;font-variant-numeric:tabular-nums'><div class='row' style='border-top:0;font-weight:700'><span>📅 ${ML(k)}</span><span style='color:${m.fx[2]}'>${m.fx[3]} ${m.fx[1]}</span></div><div class='row'><span>💰 Renda CLT</span><b>${f(m.rn)}</b></div><div class='row'><span>💸 Obrigações</span><b>${f(m.ob)}</b></div><div class='row'><span>🧮 Comprometimento</span><b>${p(m.pc)}</b></div>${m.np>m.pc?`<div class='row'><span>🛒 Com a nova parcela</span><b class='wa'>${fzf(m.np)[3]} ${p(m.np)}</b></div>`:''}<div class='row'><span>⚖️ Maior peso</span><b>${m.big[0]} (${m.ob>0?Math.round(m.big[1]/m.ob*100):0}%)</b></div><div class='row'><span>${m.cap>=0?'🧭 Margem até 50%':'🔻 Para voltar a Normal'}</span><b class='${m.cap>=0?'ok':'wa'}'>${m.cap>=0?f(m.cap):'reduzir '+f(-m.cap)}</b></div><div class='row'><span>${m.or<0?'🚨':'✅'} Orçamento${m.np>m.pc?' (sem a parcela)':''}</span><b class='${m.or<0?'er':'ok'}'>${f(m.or)}</b></div></div>`});
+ h+=`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:14px;font-variant-numeric:tabular-nums'><div class='row' style='border-top:0'><span>📊 Média do trimestre</span><b>${fm[3]} ${p(av)}</b></div><div class='row'><span>🌡️ Faixa do trimestre</span><b style='color:${fm[2]}'>${fm[1]}</b></div><div class='row'><span>📈 Maior comprometimento</span><b>${fx2[3]} ${p(mx)}</b></div>${nv>0?`<div class='row'><span>🛒 Média com a parcela</span><b class='${av2>av?'wa':'ok'}'>${fm2[3]} ${p(av2)} · ${fm2[1]}</b></div>`:''}</div><div class='note'>A faixa do trimestre vem da média dos 3 meses.</div>`;
+ h+=neg.length?`<div class='note' style='color:var(--er)'>🚨 Alerta: o orçamento fica negativo em ${neg.join(', ')}.</div>`:`<div class='note'>✅ Nenhum mês projetado com orçamento negativo.</div>`;
+ h+=`<div class='note'>🌡️ Faixas: 🟢 até 50% Normal · 🔵 50 a 60% Monitoramento · 🟡 60 a 70% Atenção preventiva · 🟠 70 a 80% Restrição financeira · 🔴 acima de 80% Proteção reforçada. 🛡️ Quanto maior o comprometimento futuro, maior a proteção contra novas obrigações não essenciais.</div>`;
+ $('pjo').innerHTML=h;
+ const sa=nn?Math.max(0,Math.min(...M.filter((m,k)=>sel[k]).map(m=>m.cap))):0;let sim='';
+ if(nv>0&&!nn)sim='<div class="note">Selecione ao menos um mês para simular.</div>';
+ if(nv>0&&nn>0){const bad=M.some((m,k)=>sel[k]&&m.or-nv<0);
+  sim=M.map((m,k)=>!sel[k]?'':`<div class='row'><span>📅 ${ML(k)} com a parcela</span><b>${fzf(m.np)[3]} ${p(m.np)} · orç. <span class='${m.or-nv<0?'er':'ok'}'>${f(m.or-nv)}</span></b></div>`).join('')+`<div style='margin-top:8px;padding:8px 10px;border-radius:10px;border:2px solid var(--${bad?'er':w2<=50?'ok':'wa'})'><b>${bad?'🚨 Não recomendo: estoura o orçamento':w2<=50?'✅ Cabe com folga: segue na faixa Normal':'⚠️ Cabe, mas leva o pior mês para '+wf2[1]}</b><div class='note' style='margin:4px 0 0'>O gráfico acima já mostra a parcela (faixa hachurada).</div></div>`;
+  tx+='\n\n🛒 Simulação de nova parcela de '+f(nv)+' em '+lbl+': '+(bad?'estoura o orçamento':w2<=50?'cabe na faixa Normal':'pior mês vai para '+wf2[1]+' ('+p(w2)+')')+'\n🛒 Média com a parcela: '+p(av2)+' ('+fm2[1]+')'}
+ $('pjnr').innerHTML=sim+`<div class='note' style='margin:8px 0 0'>🧭 Parcela máxima para manter a faixa Normal${nn>1?' nos meses escolhidos':' no mês escolhido'}: <b class='${sa>0?'ok':'wa'}'>${f(sa)}/mês</b></div>`;
+ tx+='\n\n📊 Média do trimestre: '+p(av)+' ('+fm[1]+')\n📈 Maior comprometimento: '+p(mx)+'\n'+(neg.length?'🚨 Alerta: orçamento negativo em '+neg.join(', ')+'.':'✅ Nenhum mês projetado com orçamento negativo.')+'\nℹ️ Apenas informativo: não define regime, não altera o Imposto Disciplinar e não cria obrigações nem restrições.';$('pjt').value=tx}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-cp]');if(!b)return;const k=+b.dataset.cp;['rn','fx','pc','fa','ou','ex','vr'].forEach(i=>{$('pj'+k+i).value=$('pj'+(k-1)+i).value});pjRender()});
+document.addEventListener('input',pjRender);
+$('pjc').addEventListener('click',async()=>{const t=$('pjt').value;if(!t)return;try{await navigator.clipboard.writeText(t);$('pjm').textContent='Copiado!'}catch(e){$('pjt').select();try{document.execCommand('copy');$('pjm').textContent='Copiado!'}catch(e2){$('pjm').textContent='Segure no texto e copie.'}}});
+function evoRender(){try{
+ const rw=(a,b,c)=>`<div class='row'><span>${a}</span><b${c?` class='${c}'`:''}>${c=='ok'?'✅ ':c=='wa'?'⚠️ ':c=='er'?'🚨 ':''}${b}</b></div>`;
+ const bx=(t,i)=>`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:10px;font-variant-numeric:tabular-nums'><div class='row' style='border-top:0;font-weight:700'><span>${t}</span></div>${i}</div>`;
+ const mt=(l,pc,tx)=>`<div style='margin:10px 0 3px;display:flex;justify-content:space-between;gap:10px;font-size:14px'><span>${l}</span><b>${tx}</b></div><div style='height:10px;border-radius:6px;background:var(--bd);overflow:hidden;margin-bottom:6px'><div style='height:100%;width:${Math.min(100,Math.max(0,pc))}%;background:var(--ok)'></div></div>`;
+ const sg=n=>(n>=0?'+':'')+p(n),fl=x=>x>=0?'ok':x>=-10?'wa':'er';
+ const ct=window.COLTOT||0,cm=window.COLMETA||0,fx=+$('fxs').value||0,cb=(+$('chs').value||0)+(+$('chc').value||0);let rt=0,ei=0,ec=0;(RO||[]).forEach(r=>rt+=r.v);(CP||[]).forEach(r=>{ei+=r.q*r.p;ec+=r.q});
+ const lp=+$('chi').value||0,tot=cb+fx+rt+ei+lp,pa=[['Tesouro IPCA+',lp,'#8a6d00'],['Colchão',cb,'#2a9d8f'],['Reserva Flex',fx,'#2a78d6'],['Reserva Obrigatória',rt,'#c4501f'],['ETFs',ei,'#6250d6']].filter(x=>x[1]>0);
+ let h=bx('💰 Patrimônio acompanhado no app',rw('💧 Colchão (Selic e CDB)',f(cb))+rw('💼 Reserva Flex',f(fx))+rw('🔒 Reserva Obrigatória',f(rt))+rw('🌱 Tesouro IPCA+ (longo prazo)',f(lp))+rw('📈 ETFs comprados',f(ei)+' · '+ec+' cotas')+rw('🏦 Total acompanhado',f(tot))+(tot>0?`<div style='display:flex;gap:2px;height:14px;margin:8px 0 4px'>${pa.map(x=>`<div style='flex:${x[1]};background:${x[2]};border-radius:4px'></div>`).join('')}</div><div style='display:flex;flex-wrap:wrap;gap:3px 12px;font-size:12px;color:var(--mu);margin-bottom:6px'>${pa.map(x=>`<span><i style='display:inline-block;width:10px;height:10px;border-radius:2px;background:${x[2]};margin-right:4px'></i>${x[0]} ${Math.round(x[1]/tot*100)}%</span>`).join('')}</div>`:'')+`<div class='note'>Soma só o que você preencheu nos cards, sem o restante da carteira.</div>`);
+ let R=0,D=0;for(let k=0;k<3;k++){R+=+$('rc'+k).value||0;D+=+$('ds'+k).value||0}
+ const fa=R-D,fp=R>0?fa/R*100:0,per0=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),pib=R/ltDias(per0)*90;
+ const hv=LT.map(r=>r.r>0?(r.r-r.d)/r.r*100:0),av=hv.length?hv.reduce((s,x)=>s+x,0)/hv.length:null;
+ let pv=null;for(let i=LT.length-1;i>=0;i--){if(LT[i].p!==per0){pv=LT[i];break}}const vr=pv?pibVar(pib,ltPib(pv)):null;
+ h+=bx('🔄 Trimestre atual (simulado)',rw('💰 Receita',f(R))+rw('💸 Despesa',f(D))+rw('📊 Fluxo acumulado',f(fa)+' ('+p(fp)+')',fl(fp))+(av!==null?rw('📐 Contra a média',(fp>=av?'▲ ':'▼ ')+Math.abs(fp-av).toFixed(1).replace('.',',')+' pontos',fp>=av?'ok':'wa'):'')+rw('🏦 PIB Financeiro',f(pib))+(vr!==null?rw('📈 Variação do PIB',sg(vr)+(vr>=0?' 📈':' 📉'),vr>=0?'ok':'wa'):''));
+ if(LT.length){const mi=hv.indexOf(Math.max(...hv)),pi=hv.indexOf(Math.min(...hv)),sr=LT.reduce((s,r)=>s+r.r,0),sd=LT.reduce((s,r)=>s+r.d,0);
+  h+=bx('📚 Histórico dos trimestres fechados',rw('🗂️ Trimestres fechados',String(LT.length))+rw('🏆 Melhor trimestre',p(hv[mi]),'ok')+`<div class='note' style='margin:-2px 0 4px'>${LT[mi].c}</div>`+rw('🔻 Pior trimestre',p(hv[pi]),fl(hv[pi]))+`<div class='note' style='margin:-2px 0 4px'>${LT[pi].c}</div>`+rw('📐 Média do fluxo',p(av),fl(av))+rw('💰 Receita acumulada',f(sr))+rw('💸 Despesa acumulada',f(sd))+rw('📊 Fluxo acumulado',f(sr-sd),sr-sd>=0?'ok':'er')+(LT.length>1?rw('🧭 Do primeiro ao último',sg(hv[hv.length-1]-hv[0])+' pontos',hv[hv.length-1]>=hv[0]?'ok':'wa'):''));
+  h+=bx('🏦 PIB Financeiro por trimestre',LT.map((r,i)=>{const v=i>0?pibVar(ltPib(r),ltPib(LT[i-1])):null;return `<div style='padding:7px 0;border-top:1px solid var(--bd)'><div style='color:var(--mu);font-size:13px'>${r.c}</div><div style='display:flex;justify-content:space-between'><b>${f(ltPib(r))}</b><b class='${v===null?'':v>=0?'ok':'wa'}'>${v!==null?sg(v)+(v>=0?' 📈':' 📉'):'—'}</b></div></div>`}).join(''))}
+ const im=(window.RT||0)*IMP/100,a1=$('ltp1').value,a2=$('ltp2').value,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0),mc=(rows=>rows)(String((document.querySelector('#ckl')||{}).textContent||'').match(/(\d+) de (\d+)/));
+ {const g=gastoTri();let rr=rw('💸 Média mensal do trimestre atual',g?f(g.avg):'—')+(g&&g.pv>0?rw('📅 Média do trimestre anterior',f(g.pv)+' · '+g.pn)+rw('📈 Variação',g.txt,g.cl):rw('📈 Variação','sem trimestre anterior fechado'));
+ if(LT.length)rr+=`<div style='font-size:13px;color:var(--mu);margin:8px 0 2px'>Histórico das médias mensais de gasto:</div>`+LT.map((r,i)=>{const a=r.d/3,v=i>0&&LT[i-1].d>0?(a-LT[i-1].d/3)/(LT[i-1].d/3)*100:null;return `<div style='padding:7px 0;border-top:1px solid var(--bd)'><div style='color:var(--mu);font-size:13px'>${r.c}</div><div style='display:flex;justify-content:space-between'><b>${f(a)}</b><b class='${v===null?'':v<=0?'ok':v>10?'er':'wa'}'>${v===null?'—':(v>0?'⬆️ +':'⬇️ ')+p(v)}</b></div></div>`}).join('');
+ h+=bx('💸 Gasto médio mensal por trimestre',rr)}
+ h+=bx('🎯 Progresso das metas',(cm?mt('💧 Colchão',ct/cm*100,f(ct)+' de '+f(cm)):'')+(im>0?mt('💰 Imposto pago',impPago()/im*100,f(impPago())+' de '+f(im)):'')+(im>0?mt('⚖️ Imposto aplicado',ap/im*100,f(ap)+' de '+f(im)):'')+(mc&&+mc[2]?mt('📝 Checklist da revisão',+mc[1]/+mc[2]*100,mc[1]+' de '+mc[2]):''));
+ $('evx').innerHTML=h}catch(e){}}
+['input','change','click'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(evoRender,40)));
+function insRender(){try{stCompute();
+ const rows=(el,l)=>{if(!el)return '';const r=[...el.querySelectorAll('.row')].find(x=>x.textContent.includes(l));return r&&r.lastElementChild?r.lastElementChild.textContent.trim().replace(/\s+/g,' '):''};
+ const A=[],add=(lv,t)=>A.push([lv,t]),td=new Date();td.setHours(0,0,0,0);
+ const ct=window.COLTOT||0,cm=window.COLMETA||0,clt=+$('clt').value||0,tv=clt*(+$('teto').value||0)/100;
+ let R=0,D=0;for(let k=0;k<3;k++){R+=+$('rc'+k).value||0;D+=+$('ds'+k).value||0}const fl=R>0?(R-D)/R*100:0;
+ if(ct<=0)add('in','💧 Informe seu colchão (Selic e CDB) para eu medir a meta.');
+ else if(ct<cm)add('wa','💧 Colchão em '+Math.round(ct/cm*100)+'% da meta: faltam '+f(cm-ct)+'. A renda fixa nova vai primeiro para ele.');
+ else add('ok','💧 Colchão na meta de '+f(cm)+'. A renda fixa já pode dividir com o IPCA+.');
+ add(fl>=0?'ok':fl>=-10?'wa':'er','🌡️ TFP '+rows($('tri'),'TFP')+' · fluxo de '+p(fl)+'. Imposto previsto: '+rows($('tri'),'Imposto Disciplinar')+'.');
+ const rg=rows($('tri'),'Regime do 1º');if(rg.includes('forçado'))add('wa','🚦 O mês seguinte entra em regime forçado: '+rg+'.');
+ {const g=gastoTri();if(g&&g.up&&g.pc>10)add('wa','📈 O gasto médio mensal do trimestre subiu '+p(g.pc)+' contra o trimestre anterior ('+f(g.v)+' a mais por mês).')}
+ const ab=[0,1,2].filter(k=>(+$('fa'+k).value||0)>tv);
+ add(ab.length?'er':'ok',ab.length?'💳 Fatura acima do teto ('+f(tv)+') no mês '+ab.map(k=>k+1).join(', ')+'.':'💳 Todas as faturas dentro do teto de '+f(tv)+'.');
+ const po=$('pjo')?$('pjo').innerText:'',mg=po.match(/Alerta: o orçamento fica negativo em [^\n]*/);
+ if(mg)add('er','🔭 '+mg[0]);else if(po)add('in','🔭 Projeção: comprometimento médio de '+rows($('pjo'),'Média do trimestre').replace(/^\S+\s/,'')+' ('+rows($('pjo'),'Faixa do trimestre')+').');
+ const up=(RO||[]).map(r=>{const a=r.d.split('-').map(Number),lib=new Date(a[0],a[1],a[2]);return [Math.round((lib-td)/864e5),r.v]}).filter(x=>x[0]>0).sort((a,b)=>a[0]-b[0]);
+ if(up.length)add('in','🔒 Próxima liberação da Reserva Obrigatória em '+up[0][0]+' dias ('+f(up[0][1])+').');
+ const im=(window.RT||0)*IMP/100,a1=$('ltp1').value,a2=$('ltp2').value,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0);
+ if(im>0){const pg=impPago();if(pg<im-.005)add('wa','⚖️ Faltam '+f(im-pg)+' do Imposto Disciplinar a pagar ('+p((im-pg)/im*100)+' do devido).');else add(ap>=im?'ok':'in',ap>=im?'📈 Imposto Disciplinar pago e aplicado em ETFs ('+f(ap)+').':'📈 Imposto pago: faltam '+f(im-ap)+' para aplicar em ETFs.')}
+ const pend=(LV||[]).filter(x=>x.st!=2).length;if(pend)add('wa','📘 '+pend+' pendência(s) em aberto no Livro.');
+ {const rp=(LV||[]).filter(x=>x.rec).reduce((s,x)=>s+Math.max(0,x.rec.falt-(x.rec.pg||[]).reduce((t,y)=>t+y[1],0)),0);if(rp>.005)add('wa','🧾 Faltam '+f(rp)+' de recolhimento de receitas avulsas, a pagar aos poucos.')}
+ try{const nd=lvDetect().length;if(nd)add('wa','📘 '+nd+' ponto(s) detectado(s) pelo app para registrar no Livro.')}catch(e){}
+ {const od=reuns().filter(r=>r.past&&!r.done);if(od.length)add('wa','🗓️ '+od.length+' reunião(ões) mensal(is) sem registro: '+od.map(r=>r.d.toLocaleDateString('pt-BR',{month:'long'})).join(', ')+'.')}
+ const nx=document.querySelector('#cal [data-next]');if(nx){const d=nx.textContent.match(/em (\d+) dias/);if(d&&+d[1]<=15)add('wa','🗓️ '+nx.textContent.trim().replace(/\s+/g,' '))}
+ const mc=$('ckl')?$('ckl').textContent.match(/(\d+) de (\d+)/):null;if(mc&&+mc[1]<+mc[2])add('in','📝 Checklist da revisão: '+mc[1]+' de '+mc[2]+' itens.');
+ const o={er:0,wa:1,in:2,ok:3};A.sort((a,b)=>o[a[0]]-o[b[0]]);window.SIG=A;
+ const cnt={er:0,wa:0,in:0,ok:0};A.forEach(a=>cnt[a[0]]++);const bad=cnt.er+cnt.wa,cl={er:'--er',wa:'--wa',ok:'--ok','in':'--ac'};
+ const gg=t=>/recolhimento/i.test(t)?'#avrr':/gasto médio/.test(t)?'#evx':/colch/i.test(t)?'#cho':/Fatura|teto/.test(t)?'#cpr':/Projeção|orçamento/.test(t)?'#pjo':/Reserva Obrigatória/.test(t)?'#rol':/Imposto/.test(t)?'#impo':/pendência|Livro/i.test(t)?'#lvsg':/Checklist/.test(t)?'#ckl':/TFP|fluxo|regime/i.test(t)?'#tri':/evento|🗓️/.test(t)?'#cal':'#pan';
+ const LG=[['er','Urgente','precisa de ação'],['wa','Atenção','acompanhe ou ajuste'],['in','Dica','próximo passo'],['ok','Em ordem','nada a fazer']];
+ const lg='<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:4px 0 6px">'+LG.map(x=>`<div style="display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--mu)"><i style="flex:none;width:12px;height:12px;border-radius:3px;margin-top:2px;background:var(${cl[x[0]]})"></i><span><b style="color:var(--tx)">${x[1]}${cnt[x[0]]?' ('+cnt[x[0]]+')':''}</b><br>${x[2]}</span></div>`).join('')+'</div>';
+ $('ins').innerHTML='<h2>💡 Sinais do app</h2><div class="note">'+(bad?bad+' ponto(s) pedem atenção. ':'Tudo em ordem por aqui 🎉 ')+'Atualiza sozinho.</div>'+semh()+actsHtml()+lg+A.slice(0,8).map(a=>`<div data-go='${gg(a[1])}' style='cursor:pointer;border-left:4px solid var(${cl[a[0]]});padding:7px 10px;margin-top:6px;background:var(--bg);border-radius:0 8px 8px 0;font-size:14px'><div style='font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(${cl[a[0]]})'>${LG.find(x=>x[0]==a[0])[1]}</div>${a[1]} <span style='color:var(--mu)'>➜</span></div>`).join('')}catch(e){}}
+function wiRender(){try{for(let i=0;i<3;i++){const rc=+$('rc'+i).value||0,ds=+$('ds'+i).value||0,pc=+$('ws'+i).value||0;$('wp'+i).textContent=pc+'%';
+ if(!pc){$('wr'+i).innerHTML='Mova a barra para ver o efeito de gastar menos neste mês.';continue}
+ const nd=ds*(1-pc/100),fl=rc>0?(rc-nd)/rc*100:0,cp=rc>0?nd/rc*100:0,rg=regFlow(fl);
+ $('wr'+i).innerHTML=`💸 Despesa de <b>${f(nd)}</b> (economia de <b class="ok">${f(ds-nd)}</b>)<br>📊 Fluxo <b class="${fl>=0?'ok':'wa'}">${p(fl)}</b> · 🚦 Regime <b>${nomes[rg]}</b>`}}catch(e){}}
+function mwSync(){const d=window.MWD;if(!d)return;const r=$('mwr');r.max=Math.max(1000,Math.round(d.R*.8/10)*10);if(!window.MWT)r.value=d.d3;mwRender()}
+function mwRender(){try{const d=window.MWD;if(!d||!(d.R>0))return;const x=+$('mwr').value||0,fl=(d.R-(d.d12+x))/d.R,FX=fl>=.2?['Sólido','🏆',.8]:fl>=0?['Equilibrado','🙂',.65]:fl>=-.1?['Pressionado','⚠️',.5]:['Crítico','🚨',.3];
+ $('mwv').textContent=f(x);$('mwo').innerHTML=`${FX[1]} Fecharia como <b>${FX[0]}</b> (${p(fl*100)}) · imposto ${FX[2].toFixed(2).replace('.',',')}% = ${f(d.R*FX[2]/100)}<br>${x<d.d3?'✂️ Economia de <b class="ok">'+f(d.d3-x)+'</b> contra o valor digitado':x>d.d3?'⚠️ <b class="wa">'+f(x-d.d3)+'</b> a mais que o valor digitado':'✍️ Igual ao valor digitado'}`}catch(e){}}
+$('mwr').addEventListener('input',()=>{window.MWT=1;mwRender()});$('mwz').addEventListener('click',()=>{window.MWT=0;mwSync()});
+(function(){const N=[['🧭','Resumo','Resumo geral'],['📊','Simulação','Simulação'],['💧','Reservas','Colchão e reservas'],['📈','ETFs','Imposto Disciplinar'],['🗓️','Revisão','Revisão trimestral'],['📑','Livro','Livro de pendências']];
+ $('nvb').innerHTML=N.map(n=>`<button class="sg" style="flex:none;min-width:84px" data-n="${n[2]}">${n[0]}<small>${n[1]}</small></button>`).join('');
+ $('nvb').addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;const d=[...document.querySelectorAll('details.sec')].find(x=>x.querySelector('summary').textContent.includes(b.dataset.n));if(!d)return;d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})})})();
+$('ins').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;const el=document.querySelector(b.dataset.go);if(!el)return;const d=el.closest('details');if(d)d.open=true;el.scrollIntoView({behavior:'smooth',block:'center'})});
+document.querySelectorAll('input[type=number]').forEach(i=>{i.setAttribute('inputmode','decimal');i.setAttribute('enterkeyhint','next')});
+document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('input[type=number]'))setTimeout(()=>{try{e.target.select()}catch(x){}},0)});
+document.addEventListener('keydown',e=>{if(e.key!=='Enter')return;const t=e.target;if(!t.matches||!t.matches('input[type=number]'))return;e.preventDefault();const L=[...document.querySelectorAll('input[type=number]:not([disabled])')].filter(x=>x.offsetParent!==null),i=L.indexOf(t);(L[i+1]||t).focus()});
+$('atg').addEventListener('click',()=>{const t=$('ata').value;if(!t){$('atm').textContent='Preencha os dados da revisão primeiro.';return}const per=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value),k='at|'+per,ex=LV.findIndex(r=>r.k==k);if(ex>=0){LV[ex].ds=t;lvSave();lvRender();$('atm').textContent='🔄 Ata do período atualizada no Livro';return}lvAddObj({sg:'AT',ds:t,js:'Ata da revisão trimestral do período '+per+'.',fd:'Art. 14º; Art. 15º',st:2,k});$('atm').textContent='✅ Ata registrada no Livro de Pendências'});
+const EJ=[[/Receita/,'💰'],[/Despesa/,'💸'],[/Fatura/,'💳'],[/Fluxo/,'📊'],[/Regime/,'🚦'],[/Imposto/,'⚖️'],[/TFP/,'🌡️'],[/Colch/,'💧'],[/Flex/,'💼'],[/Obrigat/,'🔒'],[/IPCA/,'🌱'],[/Selic/,'🏛️'],[/CDB/,'🏦'],[/ETF|ACWI|DIVO|NASD/,'📈'],[/FII/,'🏢'],[/Cart[ãa]o|Teto/,'🎚️'],[/Saldo|saldo/,'💰'],[/Meta/,'🎯'],[/Falta|falta/,'📉'],[/Sobra|Livre/,'🎉'],[/Retirad|retirad/,'💳'],[/Aporte|aporte/,'➕'],[/Total/,'🧮'],[/Data|data/,'📅'],[/Valor/,'💵'],[/Cotas?|cotas?/,'🧮'],[/Pre[çc]o/,'🏷️'],[/Descri/,'📝'],[/Justific/,'💬'],[/Situa/,'📌'],[/Pend[êe]ncia/,'📘'],[/Per[ií]odo|trimestre|Trimestre/,'🗓️'],[/Destino/,'🧭'],[/Recompos/,'🔄'],[/Progresso/,'📶'],[/PIB/,'🏦'],[/Varia[çc]/,'📈'],[/M[ée]dia/,'📊'],[/Maior/,'🔝'],[/Pior/,'🔻'],[/Melhor/,'🏆'],[/Or[çc]amento/,'🧾'],[/Obriga/,'💸'],[/Margem/,'🧭'],[/Renda/,'👷'],[/Gatilho/,'🟡']];
+const emo=s=>{for(const x of EJ)if(x[0].test(s))return x[1];return ''},hasE=s=>/^\p{Extended_Pictographic}/u.test(s.trim());
+function emojify(){const f1=el=>{const n=el.firstChild;if(!n||n.nodeType!=3)return;const t=n.nodeValue;if(!t.trim()||hasE(t))return;const e=emo(t);if(e)n.nodeValue=e+' '+t.replace(/^\s+/,'')};document.querySelectorAll('label:not(.ch)').forEach(l=>{if(!l.querySelector('input,select,textarea'))f1(l)});document.querySelectorAll('.row>span:first-child').forEach(f1)}
+function stCompute(){try{
+ const num=id=>+$(id).value||0,ST={};let R=0,D=0;
+ for(let k=0;k<3;k++){const r=num('rc'+k),d=num('ds'+k);R+=r;D+=d;const fl=r>0?(r-d)/r*100:0;ST['m'+k]=r>0?(fl>=0?'ok':fl>-30?'wa':'er'):null}
+ const fl=R>0?(R-D)/R*100:null;ST.flux=fl===null?null:fl>=0?'ok':fl>-10?'wa':'er';ST.meta=ST.flux;
+ const tv=num('clt')*num('teto')/100,fa=[0,1,2].map(k=>num('fa'+k));ST.card=tv>0&&fa.some(x=>x>0)?(fa.some(x=>x>tv)?'er':'ok'):null;
+ const ct=window.COLTOT||0,cm=window.COLMETA||0;ST.col=ct>0&&cm>0?(ct>=cm?'ok':ct>=cm*.5?'wa':'er'):null;
+ const im=(window.RT||0)*IMP/100,a1=$('ltp1').value,a2=$('ltp2').value,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0);ST.imp=im>0?(impPago()>=im-.005&&ap>=im-.005?'ok':'wa'):null;
+ let nd=0;try{nd=lvDetect().length}catch(e){}ST.liv=(nd+(LV||[]).filter(x=>x.st==0).length)?'wa':'ok';
+ const po=$('pjo')?$('pjo').innerText:'',mm=po.match(/Média do trimestre\s*[^\d]*([\d,]+)%/);
+ if(/Alerta: o orçamento fica negativo/.test(po))ST.proj='er';else if(mm){const v=parseFloat(mm[1].replace(',','.'));ST.proj=v<=50?'ok':v<=70?'wa':'er'}else ST.proj=null;
+ ST.ck=window.CKDONE?'ok':'wa';
+ const s=num('fxs'),r=num('fxr');ST.flex=s>0&&r>0?(r>s?'er':r>s*.5?'wa':'ok'):null;
+ window.ST=ST}catch(e){}}
+function semh(){const S=window.ST||{},it=[['💰','Fluxo','flux'],['💳','Cartão','card'],['💧','Colchão','col'],['⚖️','Imposto','imp'],['🔭','Projeção','proj'],['📘','Livro','liv'],['✅','Revisão','ck']];
+ return '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px">'+it.map(x=>{const s=S[x[2]],ic=s=='ok'?'✅':s=='wa'?'⚠️':s=='er'?'🚨':'➖';return `<span class="stc ${s||'na'}">${x[0]} ${x[1]} ${ic}</span>`}).join('')+'</div>'}
+function paintCards(){stCompute();const S=window.ST||{},g=window.SIG||[],map=[['o0',S.m0],['o1',S.m1],['o2',S.m2],['tri',S.flux],['cho',S.col],['pjo',S.proj],['cpr',S.card],['ckl',S.ck],['lvl',S.liv],['fxo',S.flex],['mto',S.meta],['ins',g.some(x=>x[0]=='er')?'er':g.some(x=>x[0]=='wa')?'wa':'ok']];
+ map.forEach(m=>{const el=$(m[0]);if(!el)return;const c=el.closest('.card');if(!c)return;if(m[1])c.dataset.st=m[1];else delete c.dataset.st})}
+function gastoTri(){let D=0;for(let k=0;k<3;k++)D+=+$('ds'+k).value||0;const avg=D/3;let pv=null,pn='';const per=fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value);try{for(let i=LT.length-1;i>=0;i--){if(LT[i].p!==per&&LT[i].d>0){pv=LT[i].d/3;pn=LT[i].c;break}}}catch(e){}
+ if(!(avg>0))return null;const o={avg,pv,pn};if(pv>0){o.v=avg-pv;o.pc=o.v/pv*100;o.up=o.v>0;o.cl=o.v<=0?'ok':o.pc>10?'er':'wa';o.txt=(o.v>0?'⬆️ +':'⬇️ ')+f(Math.abs(o.v))+' ('+(o.v>0?'+':'')+p(o.pc)+')'}return o}
+function recDs(r){const P=(r.pg||[]).reduce((s,y)=>s+y[1],0),b=r.base||1;return 'Receita avulsa'+(r.nome?' — '+r.nome:'')+' · '+(r.ml||('Mês '+r.m))+': total '+f(r.base)+'; devido '+f(r.dev)+' ('+p(r.dev/b*100)+' da receita), recolhido '+f(r.got)+' ('+p(r.got/b*100)+'), faltou '+f(r.falt)+' ('+p(r.falt/b*100)+' da receita).'+(P>0?' Pago aos poucos: '+f(P)+'; resta '+f(Math.max(0,r.falt-P))+' ('+p(Math.max(0,r.falt-P)/b*100)+' da receita).':'')}
+$('avrq').addEventListener('click',e=>{const b=e.target.closest('[data-pct]');if(!b||window.AVDEV==null)return;$('avrg').value=+(window.AVDEV*(+b.dataset.pct)/100).toFixed(2);avulsas();avSave()});
+$('avrr').addEventListener('click',e=>{if(!e.target.closest('#avrb')||!window.AVREC)return;lvAddObj(window.AVREC)});
+$('lvl').addEventListener('click',e=>{const b=e.target.closest('.rpb');if(!b)return;const i=+b.dataset.rp,r=LV[i];if(!r||!r.rec)return;const inp=document.querySelector('.rpv[data-rp="'+i+'"]'),P0=(r.rec.pg||[]).reduce((s,y)=>s+y[1],0),res=Math.max(0,r.rec.falt-P0),v=Math.min(+inp.value||0,res);if(!(v>0))return;r.rec.pg=(r.rec.pg||[]).concat([[new Date().toLocaleDateString('pt-BR'),v]]);const P=P0+v;r.ds=recDs(r.rec);r.st=P>=r.rec.falt-.005?2:1;lvSave();lvRender();avulsas()});
+window.IMPP={};try{window.IMPP=JSON.parse(LS.getItem('andromeda_imp')||'{}')||{}}catch(e){}
+function impPer(){return fmtd($('ltp1').value)+' a '+fmtd($('ltp2').value)}
+function impPago(){return ((window.IMPP||{})[impPer()]||[]).reduce((s,x)=>s+x[1],0)}
+function impDs(per,im,pago,falta){const rc=window.RT||0;return 'Imposto Disciplinar do trimestre ('+per+'): devido '+f(im)+' ('+(+IMP).toFixed(2).replace('.',',')+'% da receita de '+f(rc)+'), pago '+f(pago)+' ('+p(im>0?pago/im*100:0)+' do devido), falta '+f(falta)+' ('+p(im>0?falta/im*100:0)+' do devido).'}
+function impSug(){const per=impPer(),im=(window.RT||0)*IMP/100,pago=impPago(),falta=Math.max(0,im-pago);if(!(im>0)||falta<=.005)return null;return {k:'impp|'+per,sg:'IMP',ds:impDs(per,im,pago,falta),js:'Pagamento do Imposto Disciplinar pendente; pago aos poucos com a parcela Vida (Art. 11º).',fd:'Art. 11º',st:pago>0?1:0}}
+function impRender(){try{
+ const per=impPer(),im=(window.RT||0)*IMP/100,L=(window.IMPP[per]||[]),pago=L.reduce((s,x)=>s+x[1],0),falta=Math.max(0,im-pago),pp=im>0?pago/im*100:0,a1=$('ltp1').value,a2=$('ltp2').value,ap=(CP||[]).filter(x=>x.d>=a1&&x.d<=a2).reduce((s,x)=>s+x.q*x.p,0);
+ window.IMPST={im,pago,falta};
+ let h='';
+ if(!(im>0))h='<div class="note">Preencha a receita dos 3 meses para o app calcular o imposto do trimestre.</div>';
+ else{h=`<div class="row" style="border-top:0"><span>📌 Devido (${(+IMP).toFixed(2).replace('.',',')}% da receita)</span><b>${f(im)}</b></div><div class="row"><span>✅ Pago até agora</span><b class="${falta<=.005?'ok':'wa'}">${f(pago)} · ${p(pp)} do devido</b></div><div style="height:12px;border-radius:7px;background:var(--bd);overflow:hidden;margin:4px 0"><div style="height:100%;width:${Math.min(100,pp)}%;background:var(${falta<=.005?'--ok':'--wa'})"></div></div>`+(falta>.005?`<div class="row"><span>⚠️ Falta pagar</span><b class="er">${f(falta)} · ${p(100-pp)} do devido</b></div>`:`<div class="note" style="color:var(--ok)">🎉 Imposto do trimestre quitado.</div>`)+`<div class="row"><span>🌱 Aplicado em ETFs</span><b>${f(ap)}</b></div>`+(pago>ap+.005?`<div class="row"><span>🛒 Disponível para comprar cotas</span><b class="ok">${f(pago-ap)}</b></div>`:'')}
+ $('impo').innerHTML=h;
+ $('impq').innerHTML=falta>.005?'<span class="note" style="margin-right:6px">⚡ Atalhos:</span>'+[['rest','Pagar o que falta'],['50','50% do que falta'],['25','25% do que falta']].map(x=>`<button class="ch" data-ip="${x[0]}" style="background:var(--bg)">${x[1]}</button>`).join(''):'';
+ $('impl').innerHTML=L.length?`<div style="font-size:13px;color:var(--mu);margin-bottom:2px">Pagamentos deste trimestre:</div>`+L.map((x,i)=>`<div class="row"><span>📅 ${fmtd(x[0])}</span><span><b>${f(x[1])}</b> <button class="ib impx" data-i="${i}">✕</button></span></div>`).join(''):'';
+ const sg=impSug(),has=sg&&LV.some(r=>r.k==sg.k);$('impg').style.display=sg&&!has?'':'none';
+ const ri=LV.findIndex(r=>r.k=='impp|'+per);
+ if(ri>=0&&im>0){const r=LV[ri],nds=impDs(per,im,pago,falta),nst=falta<=.005?2:pago>0?1:0;if(r.ds!==nds||r.st!==nst){r.ds=nds;r.st=nst;lvSave();lvRender()}}
+}catch(e){}}
+(function(){const t=new Date();t.setMinutes(t.getMinutes()-t.getTimezoneOffset());$('impd').value=t.toISOString().slice(0,10)})();
+$('impa').addEventListener('click',()=>{const per=impPer(),im=(window.RT||0)*IMP/100,falta=Math.max(0,im-impPago());let v=+$('impv').value||0;if(!(v>0)){$('impm').textContent='Digite o valor pago.';return}if(!(im>0)){$('impm').textContent='Preencha a receita dos meses primeiro.';return}const capped=v>falta+.005;v=Math.min(v,falta);if(!(v>0)){$('impm').textContent='O imposto já está quitado. 🎉';return}
+ (window.IMPP[per]=window.IMPP[per]||[]).push([$('impd').value||new Date().toISOString().slice(0,10),+v.toFixed(2)]);try{LS.setItem('andromeda_imp',JSON.stringify(window.IMPP))}catch(e){}$('impv').value='';$('impm').textContent=capped?'✅ Registrado (limitado ao que faltava)':'✅ Pagamento registrado';impRender()});
+$('impl').addEventListener('click',e=>{const b=e.target.closest('.impx');if(!b)return;const per=impPer();(window.IMPP[per]||[]).splice(+b.dataset.i,1);try{LS.setItem('andromeda_imp',JSON.stringify(window.IMPP))}catch(x){}impRender()});
+$('impq').addEventListener('click',e=>{const b=e.target.closest('[data-ip]');if(!b)return;const im=(window.RT||0)*IMP/100,falta=Math.max(0,im-impPago()),k=b.dataset.ip;$('impv').value=+(k=='rest'?falta:falta*(+k)/100).toFixed(2)});
+$('impg').addEventListener('click',()=>{const s=impSug();if(s&&!LV.some(r=>r.k==s.k))lvAddObj(s)});
+const MESN=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+function ML(k){const el=$('mr'+k),v=el&&el.value;if(v){const a=v.split('-').map(Number);if(a[1]>=1&&a[1]<=12)return MESN[a[1]-1]+'/'+a[0]}return 'Mês '+(k+1)}
+function MN(d){const s=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});return s.charAt(0).toUpperCase()+s.slice(1)}
+function mrAuto(){const s=$('ltp1').value;if(!s)return;const a=s.split('-').map(Number);for(let k=0;k<3;k++){const el=$('mr'+k);if(!el)continue;const d=new Date(a[0],a[1]-1+k,1),v=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');if(!el.value||el.value===el.dataset.last)el.value=v;el.dataset.last=v}}
+function mlabRender(){try{for(let k=0;k<3;k++){const h=$('mh'+k);if(h)h.textContent='📅 '+ML(k);const j=$('pjl'+k);if(j)j.textContent='📅 '+ML(k);const c=$('pjm'+k);if(c&&c.parentNode&&c.parentNode.lastChild)c.parentNode.lastChild.nodeValue=' '+ML(k)}const m3=$('ml3');if(m3)m3.textContent='o último mês ('+ML(2)+')'}catch(e){}}
+function panRender(){try{
+ const EM=[['Fluxo','📊'],['Compromet','🧮'],['TFP','🌡️'],['Imposto Disciplinar','⚖️'],['Classificação','🏷️'],['Regime','🚦'],['PIB','🏦'],['Variação','📈'],['Projeção','🔭'],['Colchão','💧'],['Meta','🎯'],['Falta','📉'],['Reserva Flex','💼'],['Total','🔒'],['Travado','⏳'],['ACWI11','🌎'],['DIVO11','🇧🇷'],['NASD11','💻'],['Compras','🛒'],['Aplicado','✅'],['Imposto do trimestre','🧾'],['Pendências','📘'],['Checklist','📝'],['Próximo','🗓️']];
+ const em=a=>(EM.find(x=>String(a).startsWith(x[0]))||[0,''])[1];
+ const rw=(a,b,c,w)=>{const e=em(a),ic=c=='ok'?'✅ ':c=='wa'?'⚠️ ':c=='er'?'🚨 ':'',lb=(e?e+' ':'')+a;return w?`<div style='padding:7px 0;border-top:1px solid var(--bd)'><div style='color:var(--mu);font-size:13px'>${lb}</div><div>${ic}${b}</div></div>`:`<div class='row'><span>${lb}</span><b${c?` class='${c}'`:''}>${ic}${b}</b></div>`};
+ const bx=(t,r,inner)=>`<div style='border:1px solid var(--bd);border-radius:12px;padding:4px 12px;margin-top:10px;font-variant-numeric:tabular-nums'><div class='row' style='border-top:0;font-weight:700'><span>${t}</span><span>${r||''}</span></div>${inner}</div>`;
+ const rows=(el,l)=>{if(!el)return '—';const r=[...el.querySelectorAll('.row')].find(x=>x.textContent.includes(l));return r&&r.lastElementChild?r.lastElementChild.textContent.trim()||'—':'—'};
+ let h='';
+ const sg=(window.SIG||[]).filter(x=>x[0]!='ok').slice(0,3),ee={er:'🚨',wa:'⚠️','in':'💡'};
+ h+=`<div data-hl="1" style='border:2px solid var(--ac);border-radius:12px;padding:6px 12px;margin-top:10px'><div class='row' style='border-top:0;font-weight:700'><span>🔥 Pontos importantes agora</span></div>${sg.length?sg.map(x=>`<div style='padding:6px 0;border-top:1px dashed var(--bd);font-size:14px'>${ee[x[0]]} ${x[1]}</div>`).join(''):`<div style='padding:6px 0;font-size:14px'>✅ Tudo em ordem por aqui 🎉</div>`}</div>`;
+ document.querySelectorAll('#meses .card').forEach((c,i)=>{h+=bx('📅 '+ML(i),(c.querySelector('.tag')||{}).textContent||'',rw('💰 Receita',rows(c,'Receita'))+rw('💸 Despesa',rows(c,'Despesa'))+rw('📊 Fluxo de caixa',rows(c,'Fluxo de caixa')))});
+ const tr=$('tri'),po=$('pjo');
+ h+=bx('🌡️ Trimestre','',rw('Fluxo acumulado',rows(tr,'Fluxo acumulado'))+rw('TFP',rows(tr,'TFP'))+rw('Imposto Disciplinar',rows(tr,'Imposto Disciplinar'))+rw('Classificação',rows(tr,'Classificação'))+rw('Regime do mês seguinte',rows(tr,'Regime do 1º'))+rw('PIB Financeiro',rows(tr,'PIB Financeiro'))+rw('Variação PIB',rows(tr,'Variação vs'))+rw('Projeção: média',rows(po,'Média do trimestre'))+rw('Projeção: faixa',rows(po,'Faixa do trimestre')));
+ const cm=window.COLMETA||0,ct=window.COLTOT||0,fx=+$('fxs').value||0;
+ const td=new Date();td.setHours(0,0,0,0);let rt=0,rl=0;(RO||[]).forEach(r=>{const a=r.d.split('-').map(Number),lib=new Date(a[0],a[1],a[2]);rt+=r.v;if(lib>td)rl+=r.v});
+ h+=bx('💧 Caixa e reservas','',(ct>0?rw('Colchão atual'+($('chk').checked?' (com Flex)':''),f(ct),ct<cm?'wa':'ok')+rw('Meta do colchão',f(cm))+(ct<cm?rw('Falta para a meta',f(cm-ct)):''):rw('Colchão atual','não informado'))+rw('Reserva Flex (saldo)',fx>0?f(fx):'não informado')+(RO&&RO.length?rw('Total na Reserva Obrigatória',f(rt))+rw('Travado agora',f(rl)):rw('🔒 Reserva Obrigatória','sem aportes'))+rw('🌱 Tesouro IPCA+ (longo prazo)',(+$('chi').value||0)>0?f(+$('chi').value||0):'não informado')+((window.RESLP||0)>0?rw('⏳ Curto × longo prazo',Math.round(window.RESCP/(window.RESCP+window.RESLP)*100)+'% × '+Math.round(window.RESLP/(window.RESCP+window.RESLP)*100)+'%'):''));
+ const g={};(CP||[]).forEach(r=>{const k=r.e||'ETF';g[k]=g[k]||{q:0,v:0};g[k].q+=r.q;g[k].v+=r.q*r.p});
+ const ks=Object.keys(g);
+ h+=bx('📈 ETFs do Imposto Disciplinar','',(ks.length?ks.map(k=>rw(k,g[k].q+' cotas · '+f(g[k].v))).join(''):rw('Compras registradas','nenhuma'))+rw('💰 Imposto pago',(()=>{const im=(window.RT||0)*IMP/100,pg=impPago();return im>0?f(pg)+' de '+f(im):'—'})())+rw('Aplicado no trimestre',rows($('cai'),'Aplicado neste trimestre'))+rw('Imposto do trimestre',rows($('cai'),'Imposto do trimestre')));
+ const pend=(LV||[]).filter(x=>x.st!=2).length,nx=document.querySelector('#cal [data-next]')||document.querySelector('#cal .row');
+ h+=bx('📑 Registros e revisão','',rw('Pendências no livro do app',String(pend),pend?'wa':'ok')+rw('Checklist da revisão',rows($('ckl'),'Progresso'))+rw('Próximo evento',nx?[...nx.children].map(x=>x.textContent.trim()).join(' · '):'—','',1));
+ $('pan').innerHTML='<h2>🧭 Tudo em um só lugar</h2><div class="note">Resumo de tudo o que você preencheu, em blocos.</div>'+h+"<div class='note' style='margin-top:10px'>🔄 Atualiza sozinho conforme você preenche os outros cards.</div>"}catch(e){}}
+['input','change','click'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(panRender,30)));
+document.addEventListener('input',e=>{if(e.target.id=='chf')$('fxs').value=e.target.value;else if(e.target.id=='fxs')$('chf').value=e.target.value},true);
+function flexInit(){const a=$('fxs').value,b=$('chf').value;if(a!=='')$('chf').value=a;else if(b!=='')$('fxs').value=b}
+function syncAll(){try{mrAuto();mlabRender();colRender();pjRender();extra();flex();impRender();evoRender();wiRender();ckRender();insRender();lvSug();calRender();panRender();ataRender();paintCards();emojify();resumo()}catch(e){}}
+['input','change','click'].forEach(ev=>document.addEventListener(ev,()=>setTimeout(syncAll,60)));
+flexInit();syncAll();
+
+})();
+</script></body></html>
